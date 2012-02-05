@@ -83,7 +83,7 @@ public class TitlePage
 	
 	private Phrase createTitle()
 	{
-		com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(FontFamily.HELVETICA, 44.0f,
+		com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(FontFamily.HELVETICA, 48.0f,
 				com.itextpdf.text.Font.BOLD, BaseColor.BLACK);
 		
 		Paragraph title = new Paragraph();

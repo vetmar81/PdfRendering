@@ -35,7 +35,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import ch.zhaw.pdfrendering.enums.DocumentContentType;
+import ch.zhaw.pdfrendering.manipulation.PdfManipulation;
+import ch.zhaw.pdfrendering.manipulation.PdfMerger;
 import ch.zhaw.pdfrendering.util.FontColor;
+import ch.zhaw.pdfrendering.util.PdfHelper;
 
 import javax.swing.ImageIcon;
 
@@ -78,7 +81,9 @@ public class PdfRenderingApp extends JFrame
 	private JTextField txtEdgeSquare;
 	private JTextField txtDrawingExportPath;
 	private JTextField txtMergeDirPath;
-	private JTextField txtCtempinputpdf;
+	private JTextField txtSplitInputFile;
+	private JTextField txtMergedFilePath;
+	private JTextField txtSplitOutputDir;
 
 	/**
 	 * Launch the application.
@@ -297,9 +302,22 @@ public class PdfRenderingApp extends JFrame
 		mergePanel.add(txtMergeDirPath);
 		
 		JButton btnMergePdf = new JButton("Merge PDF");
-		btnMergePdf.setBounds(404, 30, 123, 37);
+		btnMergePdf.setBounds(402, 92, 123, 37);
 		btnMergePdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnMergePdf.addActionListener(new MergePdfListener());
 		mergePanel.add(btnMergePdf);
+		
+		JLabel lblSetPathOf = new JLabel("Set path of merged output PDF file:");
+		lblSetPathOf.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblSetPathOf.setBounds(10, 71, 333, 17);
+		mergePanel.add(lblSetPathOf);
+		
+		txtMergedFilePath = new JTextField();
+		txtMergedFilePath.setText("C:\\temp\\merged.pdf");
+		txtMergedFilePath.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtMergedFilePath.setColumns(10);
+		txtMergedFilePath.setBounds(10, 99, 369, 23);
+		mergePanel.add(txtMergedFilePath);
 		tabbedPane.setEnabledAt(1, true);
 		
 		JPanel splitPanel = new JPanel();
@@ -311,17 +329,29 @@ public class PdfRenderingApp extends JFrame
 		lblSetPathTo_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		splitPanel.add(lblSetPathTo_1);
 		
-		txtCtempinputpdf = new JTextField();
-		txtCtempinputpdf.setBounds(10, 37, 368, 23);
-		txtCtempinputpdf.setText("C:\\temp\\input.pdf");
-		txtCtempinputpdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtCtempinputpdf.setColumns(10);
-		splitPanel.add(txtCtempinputpdf);
+		txtSplitInputFile = new JTextField();
+		txtSplitInputFile.setBounds(10, 37, 368, 23);
+		txtSplitInputFile.setText("C:\\temp\\input.pdf");
+		txtSplitInputFile.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtSplitInputFile.setColumns(10);
+		splitPanel.add(txtSplitInputFile);
 		
 		JButton btnSplitPdf = new JButton("Split PDF");
-		btnSplitPdf.setBounds(399, 30, 110, 36);
+		btnSplitPdf.setBounds(399, 98, 110, 36);
 		btnSplitPdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		splitPanel.add(btnSplitPdf);
+		
+		txtSplitOutputDir = new JTextField();
+		txtSplitOutputDir.setText("C:\\temp");
+		txtSplitOutputDir.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtSplitOutputDir.setColumns(10);
+		txtSplitOutputDir.setBounds(10, 105, 368, 23);
+		splitPanel.add(txtSplitOutputDir);
+		
+		JLabel lblSetPathTo_2 = new JLabel("Set path to the directory to write split PDF files to:");
+		lblSetPathTo_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblSetPathTo_2.setBounds(10, 77, 395, 17);
+		splitPanel.add(lblSetPathTo_2);
 		tabbedPane.setEnabledAt(2, true);
 		
 		drawPanel = new JPanel();
@@ -386,7 +416,7 @@ public class PdfRenderingApp extends JFrame
 		drawSettingsPanel.add(txtEdgeSquare);
 		
 		txtDrawingExportPath = new JTextField();
-		txtDrawingExportPath.setText("C:\\temp\\test.pdf");
+		txtDrawingExportPath.setText("C:\\temp\\drawing.pdf");
 		txtDrawingExportPath.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtDrawingExportPath.setColumns(10);
 		txtDrawingExportPath.setBounds(10, 275, 347, 26);
@@ -606,7 +636,7 @@ public class PdfRenderingApp extends JFrame
 				DocumentBuilder builder = new DocumentBuilder(definition, contents);
 			
 				builder.export(txtExportPath.getText());
-				Runtime.getRuntime().exec(new String[] {"C:\\PROGRA~2\\Adobe\\READER~1.0\\Reader\\AcroRd32.exe", txtExportPath.getText()});
+				PdfHelper.displayPdf(txtExportPath.getText());
 			}
 			catch (Exception ex)
 			{
@@ -686,5 +716,49 @@ public class PdfRenderingApp extends JFrame
 			DocumentListItem item = (DocumentListItem)list.getSelectedValue();
 			editorPane.setText(item.getText());
 		}
+	}
+	
+	private class MergePdfListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			String pdfDirectory = txtMergeDirPath.getText();
+			String mergedFile = txtMergedFilePath.getText();
+			
+			PdfManipulation manipulation = new PdfMerger(pdfDirectory, mergedFile);
+			
+			try
+			{
+				manipulation.run();
+				PdfHelper.displayPdf(txtMergedFilePath.getText());
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(contentPane, String.format("PDF merge crashed! Reason: %s", ex.getMessage()),
+						"Unexpected merge error", JOptionPane.ERROR_MESSAGE);
+			}			
+			
+		}		
+	}
+	
+	private class SplitPdfListener implements ActionListener
+	{
+
+		public void actionPerformed(ActionEvent e)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private class DrawPdfListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			// TODO Auto-generated method stub
+			
+		}		
 	}
 }

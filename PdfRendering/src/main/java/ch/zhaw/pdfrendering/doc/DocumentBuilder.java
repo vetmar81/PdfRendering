@@ -20,6 +20,7 @@ import ch.zhaw.pdfrendering.doc.meta.DocumentDefinition;
 import ch.zhaw.pdfrendering.doc.meta.FontDescription;
 import ch.zhaw.pdfrendering.enums.DocumentEdge;
 import ch.zhaw.pdfrendering.util.HeadingNumberCreator;
+import ch.zhaw.pdfrendering.util.PdfHelper;
 import ch.zhaw.pdfrendering.util.UnitConversion;
 
 /**
@@ -49,14 +50,13 @@ public class DocumentBuilder
 		PdfWriter writer = PdfWriter.getInstance(doc, stream);
 		writer.setViewerPreferences(PdfWriter.PageLayoutSinglePage);
 		writer.setLinearPageMode();
-		
+
 		if (!doc.isOpen())
 		{
 			doc.open();
 		}
 		
-		new TitlePage().build(doc, writer);
-		
+		new TitlePage().build(doc, writer);		
 		doc.newPage();
 		
 		writer.setPageEvent(new HeaderFooter(doc));
@@ -73,29 +73,8 @@ public class DocumentBuilder
 			doc.add(content.asElement());
 		}
 		
-		doc.addAuthor("Markus Vetsch");
-		doc.addCreationDate();
-		doc.addSubject("iText Document Output");
-		doc.addTitle("iText Test");
-		doc.addProducer();
+		PdfHelper.addAuthorInformation(doc);
 
 		doc.close();
-	}
-	
-	private void reorderPages(Document document, PdfWriter writer) throws DocumentException
-	{
-		int totalPages = writer.getPageNumber();
-		int[] reorder = new int[totalPages];
-		for (int i = 0; i < totalPages; i++)
-		{
-			reorder[i] = i + 1;
-			if (reorder[i] > totalPages)
-			reorder[i] -= totalPages;
-			System.err.println("page " + reorder[i]
-			+ " changes to page " + (i + 1));
-		}
-		
-		document.newPage();
-		writer.reorderPages(reorder);
 	}
 }
