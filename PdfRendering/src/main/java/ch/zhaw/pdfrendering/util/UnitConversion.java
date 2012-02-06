@@ -13,6 +13,21 @@ public class UnitConversion
 	{		
 	}
 	
+	public static float asPoints(Unit unit, float value)
+	{
+		switch(unit)
+		{
+			case POINT:
+				return value;
+			case INCH:
+				return com.itextpdf.text.Utilities.inchesToPoints(value);
+			case MILLIMETER:
+				return com.itextpdf.text.Utilities.millimetersToPoints(value);
+			default:
+				return value;
+		}
+	}
+	
 	/**
 	 * Converts the specified margin value internally always to millimeters
 	 * @param value - The margin value

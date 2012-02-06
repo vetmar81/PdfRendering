@@ -34,10 +34,11 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import ch.zhaw.pdfrendering.PdfManipulation;
 import ch.zhaw.pdfrendering.enums.DocumentContentType;
-import ch.zhaw.pdfrendering.manipulation.PdfManipulation;
 import ch.zhaw.pdfrendering.manipulation.PdfMerger;
-import ch.zhaw.pdfrendering.util.FontColor;
+import ch.zhaw.pdfrendering.manipulation.PdfSplitter;
+import ch.zhaw.pdfrendering.util.ColorConverter;
 import ch.zhaw.pdfrendering.util.PdfHelper;
 
 import javax.swing.ImageIcon;
@@ -50,10 +51,14 @@ import ch.zhaw.pdfrendering.doc.DocumentContent;
 import ch.zhaw.pdfrendering.doc.meta.DocumentDefinition;
 import ch.zhaw.pdfrendering.doc.meta.FontDescription;
 import ch.zhaw.pdfrendering.doc.meta.FontStyle;
+import ch.zhaw.pdfrendering.drawing.PdfShapeDrawing;
+import ch.zhaw.pdfrendering.drawing.PdfShapeDrawing.Shape;
+
 import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.Icon;
+import ch.zhaw.pdfrendering.enums.MainColor;
 
 public class PdfRenderingApp extends JFrame
 {
@@ -84,6 +89,12 @@ public class PdfRenderingApp extends JFrame
 	private JTextField txtSplitInputFile;
 	private JTextField txtMergedFilePath;
 	private JTextField txtSplitOutputDir;
+	private JCheckBox chkDrawCircle;
+	private JCheckBox chkDrawTriangle;
+	private JCheckBox chkDrawSquare;
+	private JComboBox cbxCircleColor;
+	private JComboBox cbxTriangleColor;
+	private JComboBox cbxSquareColor;
 
 	/**
 	 * Launch the application.
@@ -339,6 +350,7 @@ public class PdfRenderingApp extends JFrame
 		JButton btnSplitPdf = new JButton("Split PDF");
 		btnSplitPdf.setBounds(399, 98, 110, 36);
 		btnSplitPdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnSplitPdf.addActionListener(new SplitPdfListener());
 		splitPanel.add(btnSplitPdf);
 		
 		txtSplitOutputDir = new JTextField();
@@ -362,40 +374,40 @@ public class PdfRenderingApp extends JFrame
 		drawPanel.add(drawSettingsPanel);
 		drawSettingsPanel.setLayout(null);
 		
-		JCheckBox chckbxDrawCircle = new JCheckBox("Draw Circle");
-		chckbxDrawCircle.setBounds(10, 69, 93, 25);
-		drawSettingsPanel.add(chckbxDrawCircle);
-		chckbxDrawCircle.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		chkDrawCircle = new JCheckBox("Draw Circle");
+		chkDrawCircle.setBounds(10, 69, 93, 25);
+		drawSettingsPanel.add(chkDrawCircle);
+		chkDrawCircle.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		JLabel lblNewLabel = new JLabel("Select items to draw:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblNewLabel.setBounds(10, 24, 141, 14);
 		drawSettingsPanel.add(lblNewLabel);
 		
-		JCheckBox chckbxDrawTriangle = new JCheckBox("Draw Triangle");
-		chckbxDrawTriangle.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		chckbxDrawTriangle.setBounds(10, 130, 124, 25);
-		drawSettingsPanel.add(chckbxDrawTriangle);
+		chkDrawTriangle = new JCheckBox("Draw Triangle");
+		chkDrawTriangle.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		chkDrawTriangle.setBounds(10, 130, 124, 25);
+		drawSettingsPanel.add(chkDrawTriangle);
 		
-		JCheckBox chckbxDrawSquare = new JCheckBox("Draw Square");
-		chckbxDrawSquare.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		chckbxDrawSquare.setBounds(10, 193, 112, 25);
-		drawSettingsPanel.add(chckbxDrawSquare);
+		chkDrawSquare = new JCheckBox("Draw Square");
+		chkDrawSquare.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		chkDrawSquare.setBounds(10, 193, 112, 25);
+		drawSettingsPanel.add(chkDrawSquare);
 		
-		JLabel lblSetSize_1 = new JLabel("Set Radius (cm):");
+		JLabel lblSetSize_1 = new JLabel("Set Radius (mm):");
 		lblSetSize_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblSetSize_1.setBounds(169, 74, 112, 14);
 		drawSettingsPanel.add(lblSetSize_1);
 		
-		JLabel lblSetEdgeLength = new JLabel("Set Edge length (cm):");
+		JLabel lblSetEdgeLength = new JLabel("Set Edge length (mm):");
 		lblSetEdgeLength.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblSetEdgeLength.setBounds(169, 132, 149, 20);
 		drawSettingsPanel.add(lblSetEdgeLength);
 		
-		JLabel label = new JLabel("Set Edge length (cm):");
-		label.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		label.setBounds(169, 195, 149, 20);
-		drawSettingsPanel.add(label);
+		JLabel lblSetEdgeLength_1 = new JLabel("Set Edge length (mm):");
+		lblSetEdgeLength_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblSetEdgeLength_1.setBounds(169, 195, 149, 20);
+		drawSettingsPanel.add(lblSetEdgeLength_1);
 		
 		txtCircleRadius = new JTextField();
 		txtCircleRadius.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -430,7 +442,31 @@ public class PdfRenderingApp extends JFrame
 		JButton btnExportPdf = new JButton("Export PDF");
 		btnExportPdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnExportPdf.setBounds(382, 269, 132, 37);
+		btnExportPdf.addActionListener(new DrawPdfListener());
 		drawSettingsPanel.add(btnExportPdf);
+		
+		cbxCircleColor = new JComboBox();
+		cbxCircleColor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cbxCircleColor.setModel(new DefaultComboBoxModel(MainColor.values()));
+		cbxCircleColor.setBounds(482, 69, 124, 24);
+		drawSettingsPanel.add(cbxCircleColor);
+		
+		JLabel lblSetShapeColor = new JLabel("Set shape fill color:");
+		lblSetShapeColor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblSetShapeColor.setBounds(482, 40, 141, 20);
+		drawSettingsPanel.add(lblSetShapeColor);
+		
+		cbxTriangleColor = new JComboBox();
+		cbxTriangleColor.setModel(new DefaultComboBoxModel(MainColor.values()));
+		cbxTriangleColor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cbxTriangleColor.setBounds(482, 130, 124, 24);
+		drawSettingsPanel.add(cbxTriangleColor);
+		
+		cbxSquareColor = new JComboBox();
+		cbxSquareColor.setModel(new DefaultComboBoxModel(MainColor.values()));
+		cbxSquareColor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		cbxSquareColor.setBounds(482, 193, 124, 24);
+		drawSettingsPanel.add(cbxSquareColor);
 		
 		addFonts();
 	}
@@ -460,7 +496,7 @@ public class PdfRenderingApp extends JFrame
 		int fontSize = Integer.valueOf(cbxFontSize.getSelectedItem().toString());
 		FontStyle fontStyle = (FontStyle)cbxFontStyle.getSelectedItem();
 		
-		return new FontDescription(fontName, fontSize, fontStyle, FontColor.fromAwtColor(Color.BLACK));
+		return new FontDescription(fontName, fontSize, fontStyle, ColorConverter.fromAwtColor(Color.BLACK));
 	}
 	
 	private DocumentContentType getSelectedContentType()
@@ -744,11 +780,24 @@ public class PdfRenderingApp extends JFrame
 	
 	private class SplitPdfListener implements ActionListener
 	{
-
 		public void actionPerformed(ActionEvent e)
 		{
-			// TODO Auto-generated method stub
+			String inputFile = txtSplitInputFile.getText();
+			String outputDirectory = txtSplitOutputDir.getText();
 			
+			PdfManipulation manipulation = new PdfSplitter(inputFile, outputDirectory);
+			
+			try
+			{
+				manipulation.run();
+				JOptionPane.showMessageDialog(contentPane, "Splitting successfully completed", "Success", JOptionPane.INFORMATION_MESSAGE);
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(contentPane, String.format("PDF split crashed! Reason: %s", ex.getMessage()),
+						"Unexpected merge error", JOptionPane.ERROR_MESSAGE);
+			}			
 		}
 		
 	}
@@ -757,8 +806,61 @@ public class PdfRenderingApp extends JFrame
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			// TODO Auto-generated method stub
+			String outputFile = txtDrawingExportPath.getText();
 			
+			boolean drawCircle = chkDrawCircle.isSelected();
+			boolean drawTriangle = chkDrawTriangle.isSelected();
+			boolean drawSquare = chkDrawSquare.isSelected();
+			
+			int radius;
+			int triangleEdge;
+			int squareEdge;
+			
+			try
+			{
+				List<PdfShapeDrawing.ShapeDrawing> shapes = new ArrayList<PdfShapeDrawing.ShapeDrawing>();
+				
+				if (drawCircle)
+				{
+					radius = Integer.parseInt(txtCircleRadius.getText());
+					Color color = ((MainColor)cbxCircleColor.getSelectedItem()).getAwtColor();
+					shapes.add(PdfShapeDrawing.ShapeDrawing.create(Shape.CIRCLE, radius, color));
+				}
+				if (drawTriangle)
+				{
+					triangleEdge = Integer.parseInt(txtEdgeTriangle.getText());
+					Color color = ((MainColor)cbxTriangleColor.getSelectedItem()).getAwtColor();
+					shapes.add(PdfShapeDrawing.ShapeDrawing.create(Shape.TRIANGLE, triangleEdge, color));
+				}
+				if (drawSquare)
+				{
+					squareEdge = Integer.parseInt(txtEdgeSquare.getText());
+					Color color = ((MainColor)cbxSquareColor.getSelectedItem()).getAwtColor();
+					shapes.add(PdfShapeDrawing.ShapeDrawing.create(Shape.SQUARE, squareEdge, color));
+				}
+				if (!drawCircle && !drawTriangle && !drawSquare)
+				{
+					JOptionPane.showMessageDialog(contentPane, "No shape selected to be drawn to be PDF!",
+							"Empty selection", JOptionPane.INFORMATION_MESSAGE);
+				}
+				
+				try
+				{
+					new PdfShapeDrawing(outputFile, shapes).run();
+					PdfHelper.displayPdf(outputFile);
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(contentPane, String.format("PDF generation crashed! Reason: %s", ex.getMessage(),
+							"Unexpected error", JOptionPane.INFORMATION_MESSAGE));
+				}				
+			}
+			catch (Exception ex)
+			{
+				JOptionPane.showMessageDialog(contentPane, "Invalid number defined!",
+						"Invalid number format", JOptionPane.ERROR_MESSAGE);
+			}			
 		}		
 	}
 }

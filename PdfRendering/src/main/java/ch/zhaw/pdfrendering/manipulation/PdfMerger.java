@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import ch.zhaw.pdfrendering.PdfManipulation;
 import ch.zhaw.pdfrendering.util.PdfHelper;
 
 import com.itextpdf.text.Document;
