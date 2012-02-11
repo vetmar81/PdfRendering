@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JEditorPane;
@@ -38,6 +39,7 @@ import ch.zhaw.pdfrendering.PdfManipulation;
 import ch.zhaw.pdfrendering.enums.DocumentContentType;
 import ch.zhaw.pdfrendering.manipulation.PdfMerger;
 import ch.zhaw.pdfrendering.manipulation.PdfSplitter;
+import ch.zhaw.pdfrendering.manipulation.PdfTextOperation;
 import ch.zhaw.pdfrendering.util.ColorConverter;
 import ch.zhaw.pdfrendering.util.PdfHelper;
 
@@ -95,6 +97,9 @@ public class PdfRenderingApp extends JFrame
 	private JComboBox cbxCircleColor;
 	private JComboBox cbxTriangleColor;
 	private JComboBox cbxSquareColor;
+	private JPanel textPanel;
+	private JTextField txtOutputPath;
+	private JTextField txtSentence;
 
 	/**
 	 * Launch the application.
@@ -140,6 +145,7 @@ public class PdfRenderingApp extends JFrame
 		documentPanel.setLayout(null);
 		
 		docSetupPanel = new JPanel();
+		docSetupPanel.setToolTipText("Allows definition of a basic document structure for the PDF output.");
 		docSetupPanel.setBounds(197, 0, 572, 521);
 		documentPanel.add(docSetupPanel);
 		docSetupPanel.setLayout(null);
@@ -348,7 +354,7 @@ public class PdfRenderingApp extends JFrame
 		splitPanel.add(txtSplitInputFile);
 		
 		JButton btnSplitPdf = new JButton("Split PDF");
-		btnSplitPdf.setBounds(399, 98, 110, 36);
+		btnSplitPdf.setBounds(399, 92, 110, 36);
 		btnSplitPdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnSplitPdf.addActionListener(new SplitPdfListener());
 		splitPanel.add(btnSplitPdf);
@@ -357,17 +363,17 @@ public class PdfRenderingApp extends JFrame
 		txtSplitOutputDir.setText("C:\\temp");
 		txtSplitOutputDir.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtSplitOutputDir.setColumns(10);
-		txtSplitOutputDir.setBounds(10, 105, 368, 23);
+		txtSplitOutputDir.setBounds(10, 99, 368, 23);
 		splitPanel.add(txtSplitOutputDir);
 		
 		JLabel lblSetPathTo_2 = new JLabel("Set path to the directory to write split PDF files to:");
 		lblSetPathTo_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblSetPathTo_2.setBounds(10, 77, 395, 17);
+		lblSetPathTo_2.setBounds(10, 71, 395, 17);
 		splitPanel.add(lblSetPathTo_2);
 		tabbedPane.setEnabledAt(2, true);
 		
 		drawPanel = new JPanel();
-		tabbedPane.addTab("Drawing", null, drawPanel, null);
+		tabbedPane.addTab("Drawing", null, drawPanel, "Allows drawing of some shapes to the output PDF file.");
 		drawPanel.setLayout(new BorderLayout(0, 0));
 		
 		drawSettingsPanel = new JPanel();
@@ -467,6 +473,40 @@ public class PdfRenderingApp extends JFrame
 		cbxSquareColor.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		cbxSquareColor.setBounds(482, 193, 124, 24);
 		drawSettingsPanel.add(cbxSquareColor);
+		
+		textPanel = new JPanel();
+		tabbedPane.addTab("Text depiction", null, textPanel, "Prints some variations of the inserted text into output PDF file:");
+		textPanel.setLayout(null);
+		
+		JLabel lblSetPathTo_3 = new JLabel("Set path to the output PDF file to be generated:");
+		lblSetPathTo_3.setBounds(10, 73, 298, 17);
+		lblSetPathTo_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		textPanel.add(lblSetPathTo_3);
+		
+		txtOutputPath = new JTextField();
+		txtOutputPath.setBounds(10, 101, 488, 23);
+		txtOutputPath.setText("C:\\temp\\text_depiction.pdf");
+		txtOutputPath.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtOutputPath.setColumns(10);
+		textPanel.add(txtOutputPath);
+		
+		JLabel lblSpecifyASentence = new JLabel("Specify a sentence to be written to the PDF file.");
+		lblSpecifyASentence.setBounds(10, 11, 305, 17);
+		lblSpecifyASentence.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		textPanel.add(lblSpecifyASentence);
+		
+		txtSentence = new JTextField();
+		txtSentence.setBounds(10, 39, 488, 23);
+		txtSentence.setText("The quick brown fox jumps over the lazy dog.");
+		txtSentence.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		txtSentence.setColumns(10);
+		textPanel.add(txtSentence);
+		
+		JButton btnGeneratePdf = new JButton("Generate PDF");
+		btnGeneratePdf.setBounds(518, 94, 127, 36);
+		btnGeneratePdf.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnGeneratePdf.addActionListener(new TextOperationListener());
+		textPanel.add(btnGeneratePdf);
 		
 		addFonts();
 	}
@@ -784,6 +824,7 @@ public class PdfRenderingApp extends JFrame
 		{
 			String inputFile = txtSplitInputFile.getText();
 			String outputDirectory = txtSplitOutputDir.getText();
+
 			
 			PdfManipulation manipulation = new PdfSplitter(inputFile, outputDirectory);
 			
@@ -860,6 +901,35 @@ public class PdfRenderingApp extends JFrame
 			{
 				JOptionPane.showMessageDialog(contentPane, "Invalid number defined!",
 						"Invalid number format", JOptionPane.ERROR_MESSAGE);
+			}			
+		}		
+	}
+	
+	private class TextOperationListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent e)
+		{
+			StringTokenizer st = new StringTokenizer(txtSentence.getText());
+			List<String> tokens = new ArrayList<String>();
+			
+			while (st.hasMoreTokens())
+			{
+				String token = st.nextToken(" ");
+				tokens.add(token);
+			}
+			
+			try
+			{
+				String outPath = txtOutputPath.getText();
+				
+				new PdfTextOperation(outPath, tokens).run();
+				PdfHelper.displayPdf(outPath);
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(contentPane, String.format("PDF generation crashed! Reason: %s", ex.getMessage(),
+						"Unexpected error", JOptionPane.INFORMATION_MESSAGE));
 			}			
 		}		
 	}

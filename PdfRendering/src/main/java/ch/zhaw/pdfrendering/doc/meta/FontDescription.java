@@ -50,12 +50,26 @@ public class FontDescription
 	}
 	
 	/**
+	 * Call this method to register any default-OS directory containing the fonts for PDF creation.
+	 * If no OS-directory found, default fonts will be used instead.
+	 */
+	public static void registerFontDirectory()
+	{
+		registerFontDirectory(null);
+	}
+	
+	/**
 	 * Call this method to register any customized directory containing the fonts for PDF creation.
 	 * Otherwise, default fonts will be used instead.
 	 * @param fontDirectory - The directory containing customized fonts.
 	 */
 	public static void registerFontDirectory(String fontDirectory)
 	{
+		if (fontDirectory == null)
+		{
+			com.itextpdf.text.FontFactory.registerDirectories();
+		}
+		
 		com.itextpdf.text.FontFactory.registerDirectory(fontDirectory);
 		FontDescription.fontDirectory = fontDirectory;
 	}
