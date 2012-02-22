@@ -40,9 +40,13 @@ public class ContentFactory
 		{
 			return new PdfImage(item.getImagePath());
 		}
+		else if (type == DocumentContentType.LIST)
+		{
+			return new ListContent("", 0);
+		}
 		else
 		{
 			throw new RuntimeException("Invalid DocumentContentType!");
-		}
+		}	
 	}
 }

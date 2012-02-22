@@ -3,6 +3,7 @@
  */
 package ch.zhaw.pdfrendering.gui;
 
+import ch.zhaw.pdfrendering.doc.DocumentContent;
 import ch.zhaw.pdfrendering.doc.meta.FontDescription;
 import ch.zhaw.pdfrendering.enums.DocumentContentType;
 
@@ -20,6 +21,15 @@ public class DocumentListItem
 	
 	private FontDescription fontDesc;
 	
+	private DocumentContent content;
+	
+	public DocumentListItem(DocumentContent content)
+	{
+		this(content.getType(), content.getText());
+		
+		this.content = content;
+	}
+	
 	public DocumentListItem(DocumentContentType contentType, String text)
 	{
 		this.contentType = contentType;
@@ -30,6 +40,16 @@ public class DocumentListItem
 	{
 		this(contentType, text);
 		this.imagePath = imagePath;
+	}
+	
+	public boolean hasContent()
+	{
+		return content != null;
+	}
+	
+	public DocumentContent getContent()
+	{
+		return content;
 	}
 	
 	public void setFontDescription(FontDescription fontDesc)

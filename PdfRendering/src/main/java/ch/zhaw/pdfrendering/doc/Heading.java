@@ -40,6 +40,8 @@ public class Heading implements DocumentContent, Comparable<Heading>
 		fontDesc = createDescription(fontName, size);
 		par = new com.itextpdf.text.Paragraph(text, fontDesc.getFont());
 		
+		par.setLeading(40);
+		
 		setIndentByLevel(par);
 	}
 	

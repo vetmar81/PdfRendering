@@ -30,7 +30,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 /**
  * Creates simple header and footer.
  * @author Markus Vetsch
- * 03.02.2012
+ * @since 03.02.2012
  */
 
 public class HeaderFooter implements PdfPageEvent
@@ -42,13 +42,22 @@ public class HeaderFooter implements PdfPageEvent
 	
 	public HeaderFooter(Document document) 
 	{
-		header = new Phrase("iText PDF Rendering Test - just a simple header");
-		footer = new Phrase("This is just a simple footer");
+		this(document, "Header - created with iText PDF", "Footer - created with iText PDF");
 	}
 	
+	public HeaderFooter(Document document, String headerText, String footerText)
+	{
+		header = new Phrase(headerText);
+		footer = new Phrase(footerText);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.itextpdf.text.pdf.PdfPageEvent#onEndPage(com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+	 */
 	public void onEndPage(PdfWriter writer, Document document) 
 	{
 		PdfContentByte cb = writer.getDirectContent();
+		boolean isOddPage = (writer.getPageNumber() % 2) == 1;
 		
 		if (pageNumberTemplate == null && baseFont ==  null)
 		{
@@ -65,24 +74,45 @@ public class HeaderFooter implements PdfPageEvent
 			}		
 		}
 		
-		float headerPosX = ((document.right() - document.left()) / 2) + document.leftMargin();
+		// Swap header / footer position for even / odd pages
+		
+		float headerPosX = (isOddPage) ? document.leftMargin() : ((document.right() - document.left()) / 2) + document.leftMargin() + 30;
 		float footerPosY = document.bottom() - 10;
 		
 		if (document.getPageNumber() >= 1) 
 		{
-			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, header, headerPosX, document.top(), 0);			
-			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, footer, document.leftMargin(), footerPosY, 0);
+			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, header, headerPosX, document.top() + 15, 0);	
+			
+			if (isOddPage)
+			{
+				ColumnText.showTextAligned(cb, Element.ALIGN_RIGHT, footer, document.right(), footerPosY, 0);
+			}
+			else
+			{
+				ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, footer, document.leftMargin(), footerPosY, 0);
+			}
 		}
 		
-		int linePosY = (int) (document.top() - document.bottom() - footerPosY - 20);
 		int lineLeft = (int) document.left();
-		int lineRight = (int) document.right();
+		int lineRight = (int) document.right() + 50;
 		
-		Graphics2D g = cb.createGraphics(document.right() - document.left(), document.top() - document.bottom());
+		float graphicsHeight = (document.top() + document.topMargin()) - document.bottom();
+		float graphicsWidth = (float) lineRight - lineLeft;
+		
+		int headerLinePosY = 0;
+		int footerLinePosY = (int) (graphicsHeight - footerPosY - 20);
+		
+		
+		// Draw line below header / above footer
+		
+		
+		
+		Graphics2D g = cb.createGraphics(lineRight - lineLeft, (document.top() + document.topMargin()) - document.bottom());
 		g.setColor(Color.BLACK);
 		g.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.drawLine(lineLeft, linePosY, lineRight, linePosY);
+		g.drawLine(lineLeft, headerLinePosY, lineRight, headerLinePosY);
+		g.drawLine(lineLeft, footerLinePosY, lineRight, footerLinePosY);
 		g.dispose();
 		
 		cb.saveState();
@@ -94,7 +124,7 @@ public class HeaderFooter implements PdfPageEvent
 		
 		// Distinction for odd / even pages
 		
-		if ((writer.getPageNumber() % 2) == 1) 
+		if (isOddPage) 
 		{
 			cb.setTextMatrix(document.left(), footerPosY);
 			cb.showText(text);
@@ -103,13 +133,12 @@ public class HeaderFooter implements PdfPageEvent
 		}
 		else 
 		{
-			float offset = 20;
 			float adjust = baseFont.getWidthPoint("0", 12);
 			cb.setTextMatrix(
-			document.right() - textSize - offset - adjust, footerPosY);
+			document.right() - textSize - adjust, footerPosY);
 			cb.showText(text);
 			cb.endText();
-			cb.addTemplate(pageNumberTemplate, document.right() - adjust - offset, footerPosY);
+			cb.addTemplate(pageNumberTemplate, document.right() - adjust, footerPosY);
 		}
 		
 		cb.restoreState();

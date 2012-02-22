@@ -31,6 +31,14 @@ public class PdfImage implements DocumentContent
 	}
 	
 	/* (non-Javadoc)
+	 * @see ch.zhaw.pdfrendering.doc.DocumentContent#getText()
+	 */
+	public String getText()
+	{
+		return "";
+	}
+	
+	/* (non-Javadoc)
 	 * @see ch.zhaw.pdfrendering.doc.DocumentContent#asElement()
 	 */
 	public Element asElement()

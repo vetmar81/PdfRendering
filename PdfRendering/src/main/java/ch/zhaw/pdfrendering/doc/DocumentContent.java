@@ -14,6 +14,11 @@ import ch.zhaw.pdfrendering.enums.DocumentContentType;
  */
 public interface DocumentContent
 {	
+	/**Gets the underlying text of the content
+	 * @return The underlying text.
+	 */
+	String getText();
+	
 	/**
 	 * Converts the specific {@link DocumentContent} to an iText {@link Element}, that can be appended to a document.
 	 * @return The corresponding iText {@link Element}.

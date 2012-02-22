@@ -23,7 +23,12 @@ public enum DocumentContentType
 	/**
 	 * Represents any text item.
 	 */
-	SIMPLE_TEXT(15);
+	SIMPLE_TEXT(15),
+	
+	/**
+	 * Represents a list with items.
+	 */
+	LIST(20);
 	
 	/**
 	 * Determines the underlying ID of the {@link DocumentContentType}.
@@ -48,14 +53,14 @@ public enum DocumentContentType
 	{
 		switch(id)
 		{
-			case 0:
-				return "Titlepage";
 			case 5:
 				return "Image";
 			case 10:
 				return "Heading";
 			case 15:
 				return "Simple Text";
+			case 20:
+				return "List";
 			default:
 				return "Unspecified";
 		}
