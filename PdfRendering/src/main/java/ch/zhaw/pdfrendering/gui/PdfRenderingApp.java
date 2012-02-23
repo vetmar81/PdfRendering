@@ -39,7 +39,7 @@ import ch.zhaw.pdfrendering.PdfManipulation;
 import ch.zhaw.pdfrendering.enums.DocumentContentType;
 import ch.zhaw.pdfrendering.manipulation.PdfMerger;
 import ch.zhaw.pdfrendering.manipulation.PdfSplitter;
-import ch.zhaw.pdfrendering.manipulation.PdfTextOperation;
+import ch.zhaw.pdfrendering.manipulation.PdfTextTransformation;
 import ch.zhaw.pdfrendering.util.ColorConverter;
 import ch.zhaw.pdfrendering.util.PdfHelper;
 
@@ -267,6 +267,7 @@ public class PdfRenderingApp extends JFrame
 		cbxContentType.setModel(new DefaultComboBoxModel(DocumentContentType.values()));
 		cbxContentType.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		cbxContentType.setBounds(10, 36, 165, 28);
+		docSetupPanel.add(cbxContentType);
 		
 		JLabel lblSelectDocumentContent = new JLabel("Select document content:");
 		lblSelectDocumentContent.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -330,7 +331,7 @@ public class PdfRenderingApp extends JFrame
 		docSetupPanel.add(cbxDepth);
 		
 		cbxFormat = new JComboBox();
-		cbxFormat.setModel(new DefaultComboBoxModel(new String[] {"A0", "A1", "A2", "A3", "A4", "A4_LANDSCAPE ", "A5", "A6"}));
+		cbxFormat.setModel(new DefaultComboBoxModel(new String[] {"A0", "A1", "A2", "A3", "A4", "A5", "A6"}));
 		cbxFormat.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		cbxFormat.setBounds(217, 243, 132, 28);
 		docSetupPanel.add(cbxFormat);
@@ -575,7 +576,7 @@ public class PdfRenderingApp extends JFrame
 		drawSettingsPanel.add(cbxSquareColor);
 		
 		textPanel = new JPanel();
-		tabbedPane.addTab("Text depiction", null, textPanel, "Prints some variations of the inserted text into output PDF file:");
+		tabbedPane.addTab("Text transformation", null, textPanel, "Prints some variations of the inserted text into output PDF file:");
 		textPanel.setLayout(null);
 		
 		JLabel lblSetPathTo_3 = new JLabel("Set path to the output PDF file to be generated:");
@@ -1073,7 +1074,7 @@ public class PdfRenderingApp extends JFrame
 			{
 				String outPath = txtOutputPath.getText();
 				
-				new PdfTextOperation(outPath, tokens).run();
+				new PdfTextTransformation(outPath, tokens).run();
 				PdfHelper.displayPdf(outPath);
 			}
 			catch (Exception ex)

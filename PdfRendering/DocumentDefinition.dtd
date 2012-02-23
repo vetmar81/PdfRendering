@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Root element definition -->
+<!ELEMENT Document (HeaderText, FooterText, Contents)>
+
+<!-- HeaderText element - contains only the header text-->
+<!ELEMENT HeaderText (#PCDATA)>
+
+<!-- FooterText element - contains only the footer text-->
+<!ELEMENT FooterText (#PCDATA)>
+
+<!-- Children of Contents - contains various possible contents -->
+<!ELEMENT Contents (Heading | SimpleText | Image | List)*>
+
+<!-- Heading element - provide font info attributes and contains the heading text -->
+<!ELEMENT Heading (#PCDATA)>
+<!ATTLIST Heading depth CDATA #REQUIRED>
+<!ATTLIST Heading fontname CDATA #REQUIRED>
+
+<!-- SimpleText element - provide font info attributes and contains the text -->
+<!ELEMENT SimpleText (#PCDATA)>
+<!ATTLIST SimpleText fontname CDATA #REQUIRED>
+<!ATTLIST SimpleText size CDATA #REQUIRED>
+
+<!-- Image element - contains only the absolute path to the image -->
+<!ELEMENT Image (#PCDATA)>
+
+<!-- List element - contains ListItem elements and defines font info -->
+<!ELEMENT List (ListItem*)>
+<!ATTLIST List fontname CDATA #REQUIRED>
+<!ATTLIST List size CDATA #REQUIRED>
+
+<!-- ListItem element - contains only the text -->
+<!ELEMENT ListItem (#PCDATA)>

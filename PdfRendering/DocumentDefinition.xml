@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Document SYSTEM "DocumentDefinition.dtd">
+<Document>
+	<HeaderText>PDF Rendering with iText - a case study</HeaderText>
+	<FooterText>ZHAW MAS-I5</FooterText>
+	<Contents>
+		<Heading depth="0" fontname="Arial">Chapter 1 - Introduction</Heading>
+		<SimpleText fontname="Georgia" size="12">iText PDF is a OpenSource library that was originally written in Java, but was later on ported to C#.NET, too. It is quite a powerful collection of functionalities to manipulate and dynamically generate PDF files.</SimpleText>
+		<Heading depth="1" fontname="Arial">1.1 Basic basic building blocks</Heading>
+		<SimpleText fontname="Georgia" size="12">Basic building blocks, that allow PDF creation on high abstraction level without deeper knowledge of the internal PDF structure are the following:</SimpleText>
+		<List fontname="Georgia" size="12">
+			<ListItem>Element: The most abstract document content.</ListItem>
+			<ListItem>Chunk: The most atomic content.</ListItem>
+			<ListItem>Phrase: Consists of Chunks - allows simple alignment.</ListItem>
+			<ListItem>Section: Allows nested numbering of section / chapter headings.</ListItem>
+			<ListItem>Chapter: Allows nested numbering of chapter headings.</ListItem>
+		</List>
+		<Heading depth="2" fontname="Arial">1.1.1 Element</Heading>
+		<SimpleText fontname="Georgia" size="12">The most abstract PDF document content. Only defines an interface, which all basic building blocks implement.</SimpleText>
+		<Heading depth="2" fontname="Arial">1.1.2 Chunk</Heading>
+		<SimpleText fontname="Georgia" size="12">The most atomic PDF document - represents simple String pieces with a certain fontname.</SimpleText>
+		<Heading depth="0" fontname="Arial">Chapter 2 - Usage</Heading>
+		<Heading depth="1" fontname="Arial">2.1 Dynamic PDF Creation</Heading>
+		<Heading depth="2" fontname="Arial">2.2 PDF Manipulation</Heading>
+	</Contents>
+</Document>

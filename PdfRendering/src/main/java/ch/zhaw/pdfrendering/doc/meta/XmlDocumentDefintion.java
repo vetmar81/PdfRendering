@@ -64,7 +64,7 @@ public class XmlDocumentDefintion
 		headerText = headerElement.getTextTrim();
 		footerText = footerElement.getTextTrim();
 		
-		org.jdom.Element textContentsElement = (org.jdom.Element) XPath.selectSingleNode(root, "TextContents");
+		org.jdom.Element textContentsElement = (org.jdom.Element) XPath.selectSingleNode(root, "Contents");
 		
 		List textContentElements = textContentsElement.getChildren();
 		
@@ -87,7 +87,7 @@ public class XmlDocumentDefintion
 		if (elementName.equals("Heading"))
 		{
 			int depth = Integer.parseInt(xmlElement.getAttribute("depth").getValue());
-			String font = xmlElement.getAttribute("font").getValue();
+			String font = xmlElement.getAttribute("fontname").getValue();
 			String text = xmlElement.getTextTrim();
 			
 			HeadingLevel level = HeadingLevel.fromDepth(depth);
@@ -96,7 +96,7 @@ public class XmlDocumentDefintion
 		}
 		else if (elementName.equals("SimpleText"))
 		{
-			String font = xmlElement.getAttribute("font").getValue();
+			String font = xmlElement.getAttribute("fontname").getValue();
 			int size = Integer.parseInt(xmlElement.getAttribute("size").getValue());
 			String text = xmlElement.getTextTrim();
 			
@@ -107,7 +107,7 @@ public class XmlDocumentDefintion
 		}
 		else if (elementName.equals("List"))
 		{
-			String font = xmlElement.getAttribute("font").getValue();
+			String font = xmlElement.getAttribute("fontname").getValue();
 			int size = Integer.parseInt(xmlElement.getAttribute("size").getValue());
 			
 			ListContent list = new ListContent(font, size);
