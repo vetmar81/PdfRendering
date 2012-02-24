@@ -24,12 +24,20 @@ public class PdfSplitter implements PdfManipulation
 	private final String inputFile;
 	private final String outputDirectory;
 	
+	/**
+	 * Creates a new {@link PdfSplitter} instance.
+	 * @param inputFile - The input PDF file to be split into many separate files.
+	 * @param outputDirectory - The output directory to store split files to.
+	 */
 	public PdfSplitter(String inputFile, String outputDirectory)
 	{
 		this.inputFile = inputFile;
 		this.outputDirectory = outputDirectory;
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.zhaw.pdfrendering.PdfManipulation#run()
+	 */
 	public void run()
 	{		
 		try
@@ -40,6 +48,18 @@ public class PdfSplitter implements PdfManipulation
 			{
 				PdfReader reader = new PdfReader(file.getAbsolutePath());
 				int pageNumber = reader.getNumberOfPages();
+				
+				File outDir = new File(outputDirectory);
+				
+				// Create output directory, if inexistent
+				
+				if (!outDir.exists())
+				{
+					outDir.mkdir();
+				}
+				
+				// Create a new document for each page in original document.
+				// Export generated file
 				
 				for (int i = 1; i <= pageNumber; i++)
 				{

@@ -3,22 +3,12 @@
  */
 package ch.zhaw.pdfrendering.doc;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
 import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import ch.zhaw.pdfrendering.enums.DocumentContentType;
-
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Font.FontFamily;
@@ -26,8 +16,6 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfTemplate;
-import com.itextpdf.text.pdf.PdfTextArray;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.VerticalPositionMark;
 
@@ -40,11 +28,18 @@ public class TitlePage
 {
 	private Image image;
 	
+	/** 
+	 * Builds the title page.
+	 * @param doc - The {@link Document} to be used.
+	 * @param writer - The {@link PdfWriter} used for writing
+	 */
 	public void build(Document doc, PdfWriter writer)
 	{
 		try
 		{
 			doc.newPage();
+			
+			// Add picture
 			
 			image = Image.getInstance(System.getProperty("user.dir") + File.separator + "res" + File.separator + "ZHAW_Logo.png");
 			image.setAlignment(Image.ALIGN_TOP | Image.ALIGN_RIGHT);
@@ -53,6 +48,8 @@ public class TitlePage
 			doc.add(image);
 			
 			PdfContentByte pb = writer.getDirectContent();
+			
+			// Set title and author information
 			
 			buildTitle(pb, doc);
 			buildAuthorInfo(pb, doc);
@@ -63,8 +60,16 @@ public class TitlePage
 		}		
 	}
 	
+	/**
+	 * Builds the title to be displyed on title page.
+	 * @param pb - The direct PDF content as {@link PdfContentByte}.
+	 * @param doc - The {@link Document}.
+	 * @throws DocumentException
+	 */
 	private void buildTitle(PdfContentByte pb, Document doc) throws DocumentException
 	{
+		// Title as column based text
+		
 		ColumnText titleText = new ColumnText(pb);
 		float lly = (float) (0.5 * Math.abs(doc.top() - doc.bottom())) - 200;
 		float ury = (float) (0.5 * Math.abs(doc.top() - doc.bottom())) + 100;
@@ -77,8 +82,16 @@ public class TitlePage
 		titleText.go();
 	}
 	
+	/**
+	 * Builds the author information.
+	 * @param pb - The direct PDF content as {@link PdfContentByte}.
+	 * @param doc - The {@link Document}.
+	 * @throws DocumentException
+	 */
 	private void buildAuthorInfo(PdfContentByte pb, Document doc) throws DocumentException
 	{
+		// Add author text as colunn based text
+		
 		ColumnText authorText = new ColumnText(pb);
 		float llx = (float) (0.5 * Math.abs(doc.left() - doc.right())) - 200;
 		authorText.setSimpleColumn(new Rectangle(llx, doc.bottomMargin(), doc.leftMargin() + 300, doc.bottomMargin() + 120));
@@ -87,6 +100,10 @@ public class TitlePage
 	}
 	
 	
+	/** 
+	 * Creates the title character sequence.
+	 * @return The title as {@link Phrase}.
+	 */
 	private Phrase createTitle()
 	{
 		com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(FontFamily.HELVETICA, 48.0f,
@@ -115,6 +132,10 @@ public class TitlePage
 		return title;
 	}
 	
+	/**
+	 * Creates the author information.
+	 * @return The author information as {@link Phrase}.
+	 */
 	private Phrase createAuthorInfo()
 	{
 		com.itextpdf.text.Font regularFont = new com.itextpdf.text.Font(FontFamily.TIMES_ROMAN,
@@ -126,6 +147,8 @@ public class TitlePage
 																		BaseColor.BLUE);
 		
 		Phrase phrase = new Phrase();
+		
+		// offset - tabstop
 		
 		Chunk offsetChunk = new Chunk(new VerticalPositionMark(), 80);
 		
@@ -141,7 +164,7 @@ public class TitlePage
 		
 		Phrase city = new Phrase("City:", regularFont);
 		city.add(offsetChunk);
-		city.add(new Chunk("8051 Zürich", italicFont));
+		city.add(new Chunk("8051 Zï¿½rich", italicFont));
 		city.add(Chunk.NEWLINE);
 		
 		Phrase phone = new Phrase("Phone:", regularFont);

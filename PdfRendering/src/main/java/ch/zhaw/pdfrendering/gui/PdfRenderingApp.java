@@ -42,6 +42,7 @@ import ch.zhaw.pdfrendering.manipulation.PdfSplitter;
 import ch.zhaw.pdfrendering.manipulation.PdfTextTransformation;
 import ch.zhaw.pdfrendering.util.ColorConverter;
 import ch.zhaw.pdfrendering.util.PdfHelper;
+import ch.zhaw.pdfrendering.util.Property;
 
 import javax.swing.ImageIcon;
 
@@ -63,11 +64,12 @@ import javax.swing.JCheckBox;
 import javax.swing.Icon;
 import ch.zhaw.pdfrendering.enums.MainColor;
 import javax.swing.ListModel;
+import java.awt.Toolkit;
 
 public class PdfRenderingApp extends JFrame
 {
 	private DefaultListModel model;
-	private JList list;
+	private JList documentList;
 	
 	private XmlDocumentDefintion xmlDocumentDefinition;
 	
@@ -107,7 +109,7 @@ public class PdfRenderingApp extends JFrame
 	private JTextField txtOutputPath;
 	private JTextField txtSentence;
 	private JPanel importDocumentPanel;
-	private JList documentList;
+	private JList xmlDocumentList;
 	private JTextField txtImportXml;
 	private JTextField txtDocumentOutput;
 	private JEditorPane displayTextPane;
@@ -140,6 +142,7 @@ public class PdfRenderingApp extends JFrame
 	 */
 	public PdfRenderingApp()
 	{
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Development\\Java\\Projects\\PdfRendering\\res\\icon.png"));
 		setTitle("PDF Rendering Application");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 800, 600);
@@ -154,14 +157,14 @@ public class PdfRenderingApp extends JFrame
 		tabbedPane.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		importDocumentPanel = new JPanel();
-		tabbedPane.addTab("Import document", null, importDocumentPanel, "Allows import of a document strcture from XML");
+		tabbedPane.addTab("Import document", null, importDocumentPanel, "Allows import of a document structure from an XML file");
 		importDocumentPanel.setLayout(null);
 		
 		model = new DefaultListModel();
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
-		panel.setToolTipText("Allows xmlDocumentDefinition of a basic document structure for the PDF output.");
+		panel.setToolTipText("");
 		panel.setBounds(204, 0, 572, 521);
 		importDocumentPanel.add(panel);
 		
@@ -172,12 +175,12 @@ public class PdfRenderingApp extends JFrame
 		displayTextPane.setBounds(10, 342, 537, 168);
 		panel.add(displayTextPane);
 		
-		documentList = new JList(model);
-		documentList.setFont(new Font("Tahoma", Font.BOLD, 14));
-		documentList.setBorder(new LineBorder(new Color(0, 0, 0)));
-		documentList.setBounds(0, 0, 194, 510);
-		documentList.addListSelectionListener(new ListSelectionChangedListener(documentList, displayTextPane));
-		importDocumentPanel.add(documentList);
+		xmlDocumentList = new JList(model);
+		xmlDocumentList.setFont(new Font("Tahoma", Font.BOLD, 14));
+		xmlDocumentList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		xmlDocumentList.setBounds(0, 0, 194, 510);
+		xmlDocumentList.addListSelectionListener(new ListSelectionChangedListener(xmlDocumentList, displayTextPane));
+		importDocumentPanel.add(xmlDocumentList);
 
 		JLabel lblText = new JLabel("Attached text:");
 		lblText.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -187,13 +190,13 @@ public class PdfRenderingApp extends JFrame
 		JButton btnClearImportedContent = new JButton("Clear Content");
 		btnClearImportedContent.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnClearImportedContent.setBounds(278, 294, 127, 37);
-		btnClearImportedContent.addActionListener(new ClearContentListener(documentList, displayTextPane));
+		btnClearImportedContent.addActionListener(new ClearContentListener(xmlDocumentList, displayTextPane));
 		panel.add(btnClearImportedContent);
 		
 		JComboBox cbxDocumentFormat = new JComboBox();
 		cbxDocumentFormat.setModel(new DefaultComboBoxModel(new String[] {"A0", "A1", "A2", "A3", "A4", "A5", "A6"}));
 		cbxDocumentFormat.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		cbxDocumentFormat.setBounds(10, 187, 54, 28);
+		cbxDocumentFormat.setBounds(208, 200, 54, 28);
 		panel.add(cbxDocumentFormat);
 		
 		JButton btnExportImportedContent = new JButton("Export Content");
@@ -215,7 +218,7 @@ public class PdfRenderingApp extends JFrame
 		
 		JLabel label_10 = new JLabel("Set Document format:");
 		label_10.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		label_10.setBounds(12, 154, 147, 22);
+		label_10.setBounds(210, 167, 147, 22);
 		panel.add(label_10);
 		
 		JLabel lblSetExportPath = new JLabel("Set export path of document");
@@ -224,7 +227,7 @@ public class PdfRenderingApp extends JFrame
 		panel.add(lblSetExportPath);
 		
 		txtDocumentOutput = new JTextField();
-		txtDocumentOutput.setText("C:\\temp\\document.pdf");
+		txtDocumentOutput.setText("C:\\temp\\PdfRendering\\document_xml.pdf");
 		txtDocumentOutput.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtDocumentOutput.setColumns(10);
 		txtDocumentOutput.setBounds(10, 114, 347, 26);
@@ -242,12 +245,31 @@ public class PdfRenderingApp extends JFrame
 		btnImportContent.setBounds(136, 294, 132, 37);
 		btnImportContent.addActionListener(new ImportContentListener());
 		panel.add(btnImportContent);
+		
+		JLabel lblMove = new JLabel("Move selected item:");
+		lblMove.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblMove.setBounds(10, 161, 132, 22);
+		panel.add(lblMove);
+		
+		JButton btnImportMoveUp = new JButton("");
+		btnImportMoveUp.setIcon(new ImageIcon("C:\\Development\\Java\\Projects\\PdfRendering\\res\\arrow_up.png"));
+		btnImportMoveUp.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnImportMoveUp.setBounds(10, 191, 36, 37);
+		btnImportMoveUp.addActionListener(new MoveUpListener(xmlDocumentList, displayTextPane));
+		panel.add(btnImportMoveUp);
+		
+		JButton btnImportMoveDown = new JButton("");
+		btnImportMoveDown.setIcon(new ImageIcon("C:\\Development\\Java\\Projects\\PdfRendering\\res\\arrow_down.png"));
+		btnImportMoveDown.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnImportMoveDown.setBounds(56, 191, 36, 37);
+		btnImportMoveDown.addActionListener(new MoveDownListener(xmlDocumentList, displayTextPane));
+		panel.add(btnImportMoveDown);
 		tabbedPane.addTab("Create Document", documentPanel);
 		tabbedPane.setToolTipTextAt(1, "Create a structured PDF document.");
 		documentPanel.setLayout(null);
 		
 		docSetupPanel = new JPanel();
-		docSetupPanel.setToolTipText("Allows xmlDocumentDefinition of a basic document structure for the PDF output.");
+		docSetupPanel.setToolTipText("Allows Import of XML DocumentDefinition of a basic document structure for the PDF output.");
 		docSetupPanel.setBounds(197, 0, 572, 521);
 		documentPanel.add(docSetupPanel);
 		docSetupPanel.setLayout(null);
@@ -279,12 +301,6 @@ public class PdfRenderingApp extends JFrame
 		btnAddContent.setBounds(447, 294, 119, 37);
 		btnAddContent.addActionListener(new AddContentListener());
 		docSetupPanel.add(btnAddContent);
-		
-		JButton btnClearContent = new JButton("Clear Content");
-		btnClearContent.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		btnClearContent.setBounds(310, 294, 127, 37);
-		btnClearContent.addActionListener(new ClearContentListener(list, editorPane));
-		docSetupPanel.add(btnClearContent);
 		
 		JLabel lblSetFont = new JLabel("Set Font:");
 		lblSetFont.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -344,7 +360,7 @@ public class PdfRenderingApp extends JFrame
 		
 		txtExportPath = new JTextField();
 		txtExportPath.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtExportPath.setText("C:\\temp\\PdfRendering\\test.pdf");
+		txtExportPath.setText("C:\\temp\\PdfRendering\\document_custom.pdf");
 		txtExportPath.setBounds(219, 173, 347, 26);
 		docSetupPanel.add(txtExportPath);
 		txtExportPath.setColumns(10);
@@ -358,14 +374,14 @@ public class PdfRenderingApp extends JFrame
 		btnUp.setIcon(new ImageIcon("C:\\Development\\Java\\Projects\\PdfRendering\\res\\arrow_up.png"));
 		btnUp.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnUp.setBounds(56, 175, 36, 37);
-		btnUp.addActionListener(new MoveUpListener());
+		btnUp.addActionListener(new MoveUpListener(xmlDocumentList, editorPane));
 		docSetupPanel.add(btnUp);
 		
 		JButton btnDown = new JButton("");
 		btnDown.setIcon(new ImageIcon("C:\\Development\\Java\\Projects\\PdfRendering\\res\\arrow_down.png"));
 		btnDown.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnDown.setBounds(10, 175, 36, 37);
-		btnDown.addActionListener(new MoveDownListener());
+		btnDown.addActionListener(new MoveDownListener(xmlDocumentList, editorPane));
 		docSetupPanel.add(btnDown);
 		
 		JLabel lblMoveItem = new JLabel("Move selected item:");
@@ -395,13 +411,19 @@ public class PdfRenderingApp extends JFrame
 		lblDocumentFormat.setBounds(219, 210, 147, 22);
 		docSetupPanel.add(lblDocumentFormat);
 		
-		list = new JList(model);
-		list.setFont(new Font("Tahoma", Font.BOLD, 14));
-		list.setBorder(new LineBorder(new Color(0, 0, 0)));
-		list.setBounds(0, 0, 194, 510);
-		list.addListSelectionListener(new ListSelectionChangedListener(list, editorPane));
-		documentPanel.add(list);
+		documentList = new JList(model);
+		documentList.setFont(new Font("Tahoma", Font.BOLD, 14));
+		documentList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		documentList.setBounds(0, 0, 194, 510);
+		documentList.addListSelectionListener(new ListSelectionChangedListener(documentList, editorPane));
+		documentPanel.add(documentList);
 		contentPane.add(tabbedPane, BorderLayout.CENTER);
+		
+		JButton btnClearContent = new JButton("Clear Content");
+		btnClearContent.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnClearContent.setBounds(310, 294, 127, 37);
+		btnClearContent.addActionListener(new ClearContentListener(documentList, editorPane));
+		docSetupPanel.add(btnClearContent);
 		
 		JPanel mergePanel = new JPanel();
 		tabbedPane.addTab("Merge PDF", (Icon) null, mergePanel, "Merges several PDF documents into a single document.");
@@ -414,7 +436,7 @@ public class PdfRenderingApp extends JFrame
 		
 		txtMergeDirPath = new JTextField();
 		txtMergeDirPath.setBounds(10, 37, 369, 23);
-		txtMergeDirPath.setText("C:\\temp\\PdfRendering\\Merge");
+		txtMergeDirPath.setText("C:\\temp\\PdfRendering\\merge");
 		txtMergeDirPath.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtMergeDirPath.setColumns(10);
 		mergePanel.add(txtMergeDirPath);
@@ -449,7 +471,7 @@ public class PdfRenderingApp extends JFrame
 		
 		txtSplitInputFile = new JTextField();
 		txtSplitInputFile.setBounds(10, 37, 368, 23);
-		txtSplitInputFile.setText("C:\\temp\\PdfRendering\\Split\\input.pdf");
+		txtSplitInputFile.setText("C:\\temp\\PdfRendering\\split\\input.pdf");
 		txtSplitInputFile.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtSplitInputFile.setColumns(10);
 		splitPanel.add(txtSplitInputFile);
@@ -461,7 +483,7 @@ public class PdfRenderingApp extends JFrame
 		splitPanel.add(btnSplitPdf);
 		
 		txtSplitOutputDir = new JTextField();
-		txtSplitOutputDir.setText("C:\\temp\\PdfRendering\\Single");
+		txtSplitOutputDir.setText("C:\\temp\\PdfRendering\\single");
 		txtSplitOutputDir.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		txtSplitOutputDir.setColumns(10);
 		txtSplitOutputDir.setBounds(10, 99, 368, 23);
@@ -614,7 +636,7 @@ public class PdfRenderingApp extends JFrame
 	
 	private void addFonts()
 	{
-		String fontDir = "C:/Windows/Fonts";
+		String fontDir = Property.getFontDirectory();
 		FontDescription.registerFontDirectory(fontDir);
 		List<String> fonts = new ArrayList<String>(Arrays.asList(new String[] {"ARIAL", "GEORGIA", "TAHOMA", "TIMES"}));
 		
@@ -657,21 +679,6 @@ public class PdfRenderingApp extends JFrame
 		return Integer.valueOf(selection);
 	}
 	
-//	private boolean hasTitlePage()
-//	{
-//		for (int i = 0; i < model.size(); i++)
-//		{
-//			DocumentListItem item = (DocumentListItem)model.get(i);
-//			
-//			if (item.getType() == DocumentContentType.TITLEPAGE)
-//			{
-//				return true;
-//			}
-//		}
-//		
-//		return false;
-//	}
-	
 	private static class FontFileFilter implements FileFilter
 	{
 		public static String SUFFIX = ".ttf";
@@ -691,17 +698,19 @@ public class PdfRenderingApp extends JFrame
 	
 	private class MoveUpListener implements ActionListener
 	{
+		private final JList list;
+		private final JEditorPane displayPane;
+		
+		public MoveUpListener(JList list, JEditorPane displayPane)
+		{
+			this.list = list;
+			this.displayPane = displayPane;
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{			
 			int selectedIndex = list.getSelectedIndex();
 			DocumentListItem item = (DocumentListItem) list.getSelectedValue();
-			
-//			if (item.getType() == DocumentContentType.TITLEPAGE)
-//			{
-//				JOptionPane.showMessageDialog(contentPane, "Can not move titlepage in document.",
-//						"Moving titlepage not allowed", JOptionPane.INFORMATION_MESSAGE);
-//				return;
-//			}
 			
 			if (selectedIndex != -1 && selectedIndex != 0)
 			{
@@ -712,24 +721,26 @@ public class PdfRenderingApp extends JFrame
 				model.add(newIndex, selectedItem);
 				model.add(selectedIndex, previousItem);
 				list.setSelectedIndex(newIndex);
-				list.addListSelectionListener(new ListSelectionChangedListener(list, editorPane));
+				list.addListSelectionListener(new ListSelectionChangedListener(list, displayPane));
 			}			
 		}		
 	}
 	
 	private class MoveDownListener implements ActionListener
 	{
+		private final JList list;
+		private final JEditorPane displayPane;
+		
+		public MoveDownListener(JList list, JEditorPane displayPane)
+		{
+			this.list = list;
+			this.displayPane = displayPane;
+		}
+		
 		public void actionPerformed(ActionEvent e)
 		{
 			int selectedIndex = list.getSelectedIndex();
 			DocumentListItem item = (DocumentListItem) list.getSelectedValue();
-			
-//			if (item.getType() == DocumentContentType.TITLEPAGE)
-//			{
-//				JOptionPane.showMessageDialog(contentPane, "Can not move titlepage in document.",
-//						"Moving titlepage not allowed", JOptionPane.INFORMATION_MESSAGE);
-//				return;
-//			}
 			
 			if (selectedIndex != -1 && selectedIndex != model.getSize() - 1)
 			{
@@ -740,7 +751,7 @@ public class PdfRenderingApp extends JFrame
 				model.add(selectedIndex, nextItem);
 				model.add(newIndex, selectedItem);
 				list.setSelectedIndex(newIndex);
-				list.addListSelectionListener(new ListSelectionChangedListener(list, editorPane));
+				list.addListSelectionListener(new ListSelectionChangedListener(list, displayPane));
 			}			
 		}		
 	}
@@ -751,13 +762,7 @@ public class PdfRenderingApp extends JFrame
 		{
 			DocumentContentType type = getSelectedContentType();
 			String imagePath = getImagePath();
-			
-//			if (hasTitlePage() && type == DocumentContentType.TITLEPAGE)
-//			{
-//				JOptionPane.showMessageDialog(contentPane, "Can only add 1 titlepage to document.",
-//												"Titlepage already defined", JOptionPane.INFORMATION_MESSAGE);
-//				return;
-//			}
+
 			if (type == DocumentContentType.IMAGE && (imagePath == null || imagePath != ""))
 			{
 				JOptionPane.showMessageDialog(contentPane, "Can't add image content - please specify image path first.",
@@ -796,7 +801,7 @@ public class PdfRenderingApp extends JFrame
 			{
 				model.removeAllElements();
 			}
-			this.list.addListSelectionListener(new ListSelectionChangedListener(this.list, editorPane));
+			this.list.addListSelectionListener(new ListSelectionChangedListener(this.list, this.displayPane));
 		}
 		
 	}
@@ -929,19 +934,19 @@ public class PdfRenderingApp extends JFrame
 
 	private class ListSelectionChangedListener implements ListSelectionListener
 	{
-		private final JList list;
+		private final JList documentList;
 		private final JEditorPane displayPane;
 		
 		public ListSelectionChangedListener(JList list, JEditorPane displayPane)
 		{
-			this.list = list;
+			this.documentList = list;
 			this.displayPane = displayPane;
 		}
 		
 		public void valueChanged(ListSelectionEvent e)
 		{
 			displayPane.setText(null);
-			DocumentListItem item = (DocumentListItem)this.list.getSelectedValue();
+			DocumentListItem item = (DocumentListItem)this.documentList.getSelectedValue();
 			displayPane.setText(item.getText());
 		}
 	}

@@ -13,18 +13,23 @@ import com.itextpdf.text.Document;
  * @since 05.02.2012
  */
 public class PdfHelper
-{
-	private static String readerPath = "C:\\PROGRA~2\\Adobe\\READER~1.0\\Reader\\AcroRd32.exe";
-	
+{	
+	/**
+	 * No instance shall be created of this class.
+	 */
 	private PdfHelper()
 	{		
 	}
 	
+	/**
+	 * Displays and opens the PDF file in given path within Adobe Reader.
+	 * @param filePath - The PDF file path.
+	 */
 	public static void displayPdf(String filePath)
 	{
 		try
 		{
-			Runtime.getRuntime().exec(new String[] {readerPath, filePath});
+			Runtime.getRuntime().exec(new String[] {Property.getAdobeReaderPath(), filePath});
 		}
 		catch (IOException e)
 		{
@@ -32,6 +37,10 @@ public class PdfHelper
 		}		
 	}
 	
+	/**
+	 * Adds author information to the metadata of the {@link Document} to be created.
+	 * @param document - The {@link Document} to be created.
+	 */
 	public static void addAuthorInformation(Document document)
 	{
 		document.addAuthor(System.getProperty("user.name"));

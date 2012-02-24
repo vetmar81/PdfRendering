@@ -13,9 +13,11 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
+import com.itextpdf.text.BadElementException;
 import ch.zhaw.pdfrendering.doc.DocumentContent;
 import ch.zhaw.pdfrendering.doc.Heading;
 import ch.zhaw.pdfrendering.doc.ListContent;
+import ch.zhaw.pdfrendering.doc.PdfImage;
 import ch.zhaw.pdfrendering.doc.SimpleText;
 import ch.zhaw.pdfrendering.enums.HeadingLevel;
 
@@ -31,31 +33,56 @@ public class XmlDocumentDefintion
 	
 	private List<DocumentContent> contents;
 	
-	public XmlDocumentDefintion(File xmlFile) throws IOException, JDOMException
+	/**
+	 * Creates a new XmlDocumentDefiniton by loading the file into memory.
+	 * @param xmlFile - The file to be loaded.
+	 * @throws IOException
+	 * @throws JDOMException
+	 */
+	public XmlDocumentDefintion(File xmlFile) throws IOException, JDOMException, BadElementException
 	{
 		contents = new ArrayList<DocumentContent>();
 		
-		create(xmlFile);
+		load(xmlFile);
 	}
 	
+	/**
+	 * Returns the stored collection of {@link DocumentContent} items.
+	 * @return The set of {@link DocumentContent}.
+	 */
 	public Collection<DocumentContent> getContents()
 	{
 		return contents;
 	}
 	
+	/**
+	 * Returns the text to be displayed in the header section.
+	 * @return The text of the header section.
+	 */
 	public String getHeaderText()
 	{
 		return headerText;
 	}
 	
+	/**
+	 * Returns the text to be displayed in the footer section.
+	 * @return The text of the footer section.
+	 */
 	public String getFooterText()
 	{
 		return footerText;
 	}
 	
-	private void create(File xmlFile) throws IOException, JDOMException
+	/**
+	 * Loads the file contents into memory.
+	 * @param xmlFile - The file to be loaded.
+	 * @throws IOException
+	 * @throws JDOMException
+	 */
+	private void load(File xmlFile) throws IOException, JDOMException, BadElementException
 	{
-		org.jdom.Document document = new SAXBuilder().build(xmlFile);
+		SAXBuilder builder = new SAXBuilder(true);
+		org.jdom.Document document = builder.build(xmlFile);
 		org.jdom.Element root = document.getRootElement();
 		
 		org.jdom.Element headerElement = (org.jdom.Element) XPath.selectSingleNode(root, "HeaderText");
@@ -66,7 +93,7 @@ public class XmlDocumentDefintion
 		
 		org.jdom.Element textContentsElement = (org.jdom.Element) XPath.selectSingleNode(root, "Contents");
 		
-		List textContentElements = textContentsElement.getChildren();
+		List<?> textContentElements = textContentsElement.getChildren();
 		
 		for (Object textContent : textContentElements)
 		{
@@ -79,7 +106,12 @@ public class XmlDocumentDefintion
 		}
 	}
 	
-	private DocumentContent convertXmlTextContent(org.jdom.Element xmlElement)
+	/**
+	 * Converts the specified XML {@link org.jdom.Element} into a {@link DocumentContent}.
+	 * @param xmlElement - The XML element.
+	 * @return The corresponding {@link DocumentContent}.
+	 */
+	private DocumentContent convertXmlTextContent(org.jdom.Element xmlElement) throws IOException, BadElementException
 	{
 		String elementName = xmlElement.getName();
 		DocumentContent content = null;
@@ -122,7 +154,8 @@ public class XmlDocumentDefintion
 		}
 		else if (elementName.equals("Image"))
 		{
-			
+			String imagePath = xmlElement.getTextTrim();
+			content = new PdfImage(imagePath);
 		}
 		
 		return content;

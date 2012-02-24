@@ -20,9 +20,10 @@ import ch.zhaw.pdfrendering.PdfManipulation;
 import ch.zhaw.pdfrendering.doc.meta.FontDescription;
 import ch.zhaw.pdfrendering.doc.meta.FontStyle;
 import ch.zhaw.pdfrendering.util.PdfHelper;
+import ch.zhaw.pdfrendering.util.Property;
 
 /**
- * Implements simple PDF text operations
+ * Implements simple PDF text transformations
  * @author Markus Vetsch
  * @since 11.02.2012
  */
@@ -33,6 +34,7 @@ public class PdfTextTransformation implements PdfManipulation
 	private final String outputPath;
 	private final Collection<String> tokens;
 	
+	// Helper enum for the kind of manipulation
 	private enum TextManipulation
 	{
 		SPACING,
@@ -42,9 +44,11 @@ public class PdfTextTransformation implements PdfManipulation
 		TEXT_LOWER
 	}
 	
+	// Static initializer to create the various font colours
+	
 	static
 	{
-		FontDescription.registerFontDirectory("C:/Windows/Fonts");
+		FontDescription.registerFontDirectory(Property.getFontDirectory());
 		
 		FontDescription desc1 = new FontDescription("ARIAL", 14, FontStyle.BOLD, BaseColor.BLUE);
 		FontDescription desc2 = new FontDescription("ARIAL", 14, FontStyle.ITALIC, BaseColor.RED);
@@ -58,6 +62,11 @@ public class PdfTextTransformation implements PdfManipulation
 		descriptions = new FontDescription[] {desc1, desc2, desc3, desc4, desc5, desc6, desc7, desc8 };
 	}
 	
+	/**
+	 * Creates a new {@link PdfTextTransformation} instance.
+	 * @param outputPath - The output path for export of the generated PDF file.
+	 * @param tokens - The tokens to apply text transformations to.
+	 */
 	public PdfTextTransformation(String outputPath, Collection<String> tokens)
 	{
 		this.outputPath = outputPath;
@@ -79,23 +88,27 @@ public class PdfTextTransformation implements PdfManipulation
 			writer.setViewerPreferences(PdfWriter.PageLayoutSinglePage);
 			doc.open();
 			
+			// Iterate 30 times over the input tokens
+			
 			for (int i = 0; i < 30; i++)
 			{
 				Phrase phrase = new Phrase(20);
 				
 				for (String token : tokens)
 				{
+					// Select random font, create a new chunk and apply transformations
+					
 					FontDescription desc = getRandomDescription();
 					Chunk chunk = new Chunk(token, desc.getFont());
 					applyManipulations(chunk);
+					
+					// Add the transformed chunk back into the phrase
 					
 					phrase.add(chunk);
 				}
 				
 				doc.add(phrase);
 			}
-			
-//			PdfContentByte cb = writer.getDirectContent();
 		}
 		catch (Exception ex)
 		{
@@ -111,12 +124,20 @@ public class PdfTextTransformation implements PdfManipulation
 		}
 	}
 	
+	/**
+	 * Applies random text transformations to the specified {@link Chunk}.
+	 * @param chunk - The {@link Chunk} to apply text transformations to.
+	 */
 	private void applyManipulations(Chunk chunk)
 	{
+		// Create a random set of manipulation to be applied
+		
 		for (TextManipulation manipulation : createRandomManipulations())
 		{
 			switch (manipulation)
 			{
+				// Create random values for the transformation
+				
 				case SCALING:
 					chunk.setHorizontalScaling((float)Math.random());
 					break;
@@ -142,12 +163,20 @@ public class PdfTextTransformation implements PdfManipulation
 		}
 	}
 
+	/**
+	 * Gets a random {@link FontDescription} from the ones created in the static initializer
+	 * @return The randfom {@link FontDescription}
+	 */
 	private static FontDescription getRandomDescription()
 	{
 		Random random = new Random();
 		return descriptions[random.nextInt(descriptions.length)];
 	}
 	
+	/**
+	 * Creates a random {@link List} of {@link TextManipulation}.
+	 * @return The random {@link List} of {@link TextManipulation}.
+	 */
 	private static List<TextManipulation> createRandomManipulations()
 	{
 		Random random = new Random();

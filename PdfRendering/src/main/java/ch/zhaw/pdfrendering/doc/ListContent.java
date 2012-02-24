@@ -20,27 +20,52 @@ import com.itextpdf.text.ListItem;
  */
 public class ListContent implements DocumentContent
 {
+	private static float LINE_SPACING = 25;
+	private static float INDENT_LEFT = 30;
+	private static float INDENT_SYMBOL = 30;
+	
 	private FontDescription description;
 	private List list;
 	
+	/**
+	 * Creates a new {@link ListContent} with specified font name and size.
+	 * @param fontName - The name of the font to be applied.
+	 * @param fontSize - The size of the font to be applied.
+	 */
 	public ListContent(String fontName, int fontSize)
 	{
-		description = new FontDescription(fontName, fontSize, FontStyle.NORMAL, BaseColor.BLACK);
-		list = new List(false, true, 30);
-		list.setIndentationLeft(25);
+		this(new FontDescription(fontName, fontSize, FontStyle.NORMAL, BaseColor.BLACK));
+	}
+	
+	public ListContent(FontDescription description)
+	{
+		this.description = description;
+		list = new List(false, true, INDENT_SYMBOL);
+		list.setIndentationLeft(INDENT_LEFT);
+		list.setLowercase(true);
+		
+		// Reset symbol by applying a specified font
+		
 		Chunk symbol = list.getSymbol();
-		FontDescription symbolDesc = new FontDescription(fontName, fontSize, FontStyle.BOLD, BaseColor.BLACK);
+		FontDescription symbolDesc = new FontDescription(description.getFontName(), description.getFontSize(), FontStyle.BOLD, BaseColor.BLACK);
 		symbol.setFont(symbolDesc.getFont());
 		list.setListSymbol(symbol);
 	}
 	
+	/**
+	 * Adds the specified text to the {@link ListContent} instance..
+	 * @param text - The text to be added.
+	 */
 	public void addItem(String text)
 	{
 		ListItem item = new ListItem(new Chunk(text, description.getFont()));
-		item.setLeading(25);
+		item.setLeading(LINE_SPACING);
 		list.add(item);
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.zhaw.pdfrendering.doc.DocumentContent#getText()
+	 */
 	public String getText()
 	{
 		StringBuilder builder = new StringBuilder();

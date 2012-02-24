@@ -82,4 +82,14 @@ public class FontDescription
 	{
 		return font;
 	}
+	
+	public String getFontName()
+	{
+		return font.getFamilyname();
+	}
+	
+	public int getFontSize()
+	{
+		return (int)font.getSize();
+	}
 }

@@ -1,26 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Document Defintion, that allows to output the document structure as PDF -->
 <!DOCTYPE Document SYSTEM "DocumentDefinition.dtd">
 <Document>
 	<HeaderText>PDF Rendering with iText - a case study</HeaderText>
 	<FooterText>ZHAW MAS-I5</FooterText>
 	<Contents>
-		<Heading depth="0" fontname="Arial">Chapter 1 - Introduction</Heading>
-		<SimpleText fontname="Georgia" size="12">iText PDF is a OpenSource library that was originally written in Java, but was later on ported to C#.NET, too. It is quite a powerful collection of functionalities to manipulate and dynamically generate PDF files.</SimpleText>
-		<Heading depth="1" fontname="Arial">1.1 Basic basic building blocks</Heading>
-		<SimpleText fontname="Georgia" size="12">Basic building blocks, that allow PDF creation on high abstraction level without deeper knowledge of the internal PDF structure are the following:</SimpleText>
+		<Heading depth="0" fontname="Tahoma">1 Einleitung</Heading>
+		<SimpleText fontname="Georgia" size="12">Das folgende, einleitende Kapitel bietet einen kurzen Überblick über die Entstehung und generelle Verwendung des Portable Document Format (PDF), das durch die US-amerikanische Firma Adobe Systems, Inc. entwickelt und publiziert wurde.
+
+Ausserdem erfolgen eine kurze Zusammenfassung der Entstehungsgeschichte der OpenSource Bibliothek iText sowie deren vielfältige Anwendungsmöglichkeiten.
+</SimpleText>
+		<Heading depth="1" fontname="Tahoma">1.1 PDF – Portable Document Format</Heading>
+		<Image>C:\temp\PdfRendering\images\GUI_Import_Document.JPG</Image>
+		<SimpleText fontname="Georgia" size="12">Die erste Version der PDF-Spezifikation (PDF-REFERENZ, 2012) wurde im Jahre 1993 durch das US-amerikanische Softwareunternehmen Adobe Systems, Inc. publiziert. Dabei handelt es sich um ein binäres Druckausgabeformat, welches unabhängig vom Betriebssystem, Monitor oder Drucker stets einheitlich ausgegeben wird .
+
+Somit besitzt das Format bspw. gegenüber der Hypertext Markup Language (HTML) den entscheidenden Vorteil der Portabilität. Eine HTML-Datei dagegen wird von jedem Browser unterschiedlich interpretiert, was zu Abweichungen bei der Darstellung führt (LOWAGIE, 2007, S.5).
+
+Das Format hat sich daher mit der enormen Ausbreitung des World Wide Web (WWW) im ersten Jahrzehnt des 21. Jahrhunderts zu einem „de facto Standard“ (LOWAGIE, 2007, S. 6; FLESCA ET AL., 2011, S. 1826) für den Austausch oder die Ausgabe von elektronischen Dokumenten über das WWW entwickelt.
+Die jüngste Fassung der PDF-Spezifikation – die Version 1.7 – wurde im Juli 2008 publiziert (PDF-REFERENZ, 2012). Die Version 2.0 befindet sich gegenwärtig (Stand Feburar 2012) in der Entwicklung (ISO, 2012).
+</SimpleText>
+		<Heading depth="1" fontname="Tahoma">1.2 iText – Historie und Verwendung</Heading>
+		<Heading depth="2" fontname="Tahoma">1.2.1 Historie</Heading>
+		<SimpleText fontname="Georgia" size="12">iText ist eine OpenSource Programm-Bibliothek zur dynamischen Erzeugung und Manipulation von PDF-Dateien, die seit 1998 von Bruno Lowagie und ab 2000 unterstützend von Paolo Soares weiterentwickelt wird.
+
+Die Bibliothek wurde ursprünglich in Java geschrieben. iText wurde jedoch ganz nach C#.NET portiert (das Projekt nennt sich iTextSharp) und wird auf separater Codebasis weiterentwickelt.
+
+Allerdings werden neue Versionen der Bibliotheken für beide Sprachen synchron veröffentlicht. Die aktuell verfügbare, stabile Version 5.1.3 (Stand Feburar 2012) wurde mit dem Java Development Kit (JDK) Version 1.5 kompiliert.
+</SimpleText>
+		<Image>C:\temp\PdfRendering\images\GUI_Create_Document.JPG</Image>
+		<Heading depth="2" fontname="Arial">1.2.2 Möglichkeiten mit iText</Heading>
+		<SimpleText fontname="Georgia" size="12">Die grundsätzliche Idee der Bibliothek besteht darin, einem Anwender oder einer Anwenderin ohne Kenntnisse der PDF-Spezifikation die Manipulation oder die dynamische Erzeugung von PDF-Dateien über ein API (Application Programming Interface) mit hohem Abstraktionsgrad zu ermöglichen.
+
+Für sehr spezifische Problemstellungen ist es nichtsdestotrotz notwendig sich entweder mit den jeweiligen Abschnitten der PDF-Spezifikation vertraut zu machen oder die entsprechenden Kapitel im Begleitbuch „iText in Action“ (LOWAGIE, 2007) nachzuschlagen.
+
+iText bietet unter anderem die folgenden Möglichkeiten  (ergänzt, nach LUIS, 2004, S.4):
+</SimpleText>
+		<Image>C:\temp\PdfRendering\images\GUI_Split_Document.JPG</Image>
 		<List fontname="Georgia" size="12">
-			<ListItem>Element: The most abstract document content.</ListItem>
-			<ListItem>Chunk: The most atomic content.</ListItem>
-			<ListItem>Phrase: Consists of Chunks - allows simple alignment.</ListItem>
-			<ListItem>Section: Allows nested numbering of section / chapter headings.</ListItem>
-			<ListItem>Chapter: Allows nested numbering of chapter headings.</ListItem>
+			<ListItem>Unterstützung verschiedener Standard-Dokumentformate (A0, A1 … ) wie auch frei wählbarer Dokumentgrössen und -orientierung (Hoch- und Querformat)</ListItem>
+			<ListItem>Erstellung komplexer Dokumentstrukturen mit frei wählbaren Seitenrändern und Absatzabständen.</ListItem>
+			<ListItem>Erzeugung von Kopf- und Fusszeilen, Seitennummerierungen, Silbentrennung oder Aufzählungslisten</ListItem>
+			<ListItem>Einbettung von Bildern verschiedener Grafifformate (z. B. .jpg, .gif, .png)</ListItem>
+			<ListItem>Verwendung und Einbettung frei wählbarer Schriftarten aller Ausprägungen (Schriftgrösse, -art, -farbe etc.)</ListItem>
+			<ListItem>Generierung von Dokumentvorlagen</ListItem>
+			<ListItem>Direkte Zeichenoperationen für Text und Grafik in die PDF-Struktur</ListItem>
+			<ListItem>Transformationen (Skalierung, Verzerrung, Rotation … ) von Text und Grafik in vielen Variationen</ListItem>
+			<ListItem>„Split and merge“ von existierenden PDF-Dateien</ListItem>
+			<ListItem>Erzeugung von internen und externen Hyperlinks sowie von Bookmarks</ListItem>
+			<ListItem>Erstellung von PDF Formularen</ListItem>
+			<ListItem>Verschlüsselung von PDF-Dokumenten</ListItem>
+			<ListItem>Herstellung komplexer Tabellenstrukturen</ListItem>
 		</List>
-		<Heading depth="2" fontname="Arial">1.1.1 Element</Heading>
-		<SimpleText fontname="Georgia" size="12">The most abstract PDF document content. Only defines an interface, which all basic building blocks implement.</SimpleText>
-		<Heading depth="2" fontname="Arial">1.1.2 Chunk</Heading>
-		<SimpleText fontname="Georgia" size="12">The most atomic PDF document - represents simple String pieces with a certain fontname.</SimpleText>
-		<Heading depth="0" fontname="Arial">Chapter 2 - Usage</Heading>
-		<Heading depth="1" fontname="Arial">2.1 Dynamic PDF Creation</Heading>
-		<Heading depth="2" fontname="Arial">2.2 PDF Manipulation</Heading>
+		<Image>C:\temp\PdfRendering\images\GUI_Merge_Document.JPG</Image>
+		<Heading depth="2" fontname="Arial">1.2.3 Zielstellungen der Arbeit</Heading>
+		<SimpleText fontname="Georgia" size="12">Sich mit allen im vorigen Abschnitt genannten Funktionalitäten zu befassen, würde den Rahmen dieser Fallstudie weitaus sprengen. Daher konzentriert sich die vorliegende Arbeit auf die folgenden Punkte:</SimpleText>
+		<Image>C:\temp\PdfRendering\images\GUI_Drawing_Document.JPG</Image>
+		<List fontname="Georgia" size="12">
+			<ListItem>Erzeugung einer Dokumentstruktur mit ansprechendem Layout (Titelblatt, Kopf- und Fusszeile, Überschriften, Absätze, Bilder, Seitennummern)</ListItem>
+			<ListItem>Implementierung eines benutzerdefinierten „Split and Merge“ zur Teilung / Zusammenführung von PDF-Dateien</ListItem>
+			<ListItem>Untersuchung der direkten grafischen Zeichenoperationen in die PDF-Struktur</ListItem>
+			<ListItem>„Spielwiese“ für Texttransformationen jeglicher Art</ListItem>
+		</List>
+		<Heading depth="1" fontname="Tahoma">1.3 Aufbau der Arbeit</Heading>
+		<SimpleText fontname="Georgia" size="12">Kapitel 2 Vorgehen fasst die angewendeten Mittel und Methoden sowie Details zur Umsetzung zusammen, welche zur vorliegenden Java-Applikation führten.
+
+In Kapitel 3 erfolgt eine Analyse, was die Möglichkeiten und den Umgang mit der iText Bibliothek betrifft. Es folgen hierzu auch Details zu den verwendeten Komponenten aus der Library.
+
+Abschliessend zieht Kapitel 4 Fazit kurz Bilanz über die Erfahrungen, die der Autor im Umgang mit iText gesammelt hat.</SimpleText>
+		<Image>C:\temp\PdfRendering\images\GUI_TextTransformation_Document.JPG</Image>
 	</Contents>
 </Document>

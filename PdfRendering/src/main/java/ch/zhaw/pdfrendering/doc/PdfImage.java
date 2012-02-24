@@ -22,10 +22,17 @@ public class PdfImage implements DocumentContent
 	private Paragraph par;
 	private Image image; 
 	
+	/**
+	 * Creates a new {@link PdfImage} instance for PDF embedding of an image file.
+	 * @param imagePath - The file path of the image file.
+	 * @throws IOException
+	 * @throws BadElementException
+	 */
 	public PdfImage(String imagePath) throws IOException, BadElementException
 	{
 		image = Image.getInstance(imagePath);
 		image.setAlignment(Image.ALIGN_CENTER);
+		image.scalePercent(50);
 		par = new Paragraph();
 		par.add(image);
 	}

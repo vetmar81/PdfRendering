@@ -13,7 +13,7 @@
 
 <!-- Heading element - provide font info attributes and contains the heading text -->
 <!ELEMENT Heading (#PCDATA)>
-<!ATTLIST Heading depth CDATA #REQUIRED>
+<!ATTLIST Heading depth (0 | 1| 2 | 3) "0">
 <!ATTLIST Heading fontname CDATA #REQUIRED>
 
 <!-- SimpleText element - provide font info attributes and contains the text -->

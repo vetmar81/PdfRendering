@@ -5,34 +5,25 @@ package ch.zhaw.pdfrendering.doc;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Stroke;
-import java.io.IOException;
-
-import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.PdfAction;
 import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEvent;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Creates simple header and footer.
+ * Creates a header and footer based on implementing the {@link PdfPageEvent} interface.
  * @author Markus Vetsch
  * @since 03.02.2012
  */
-
 public class HeaderFooter implements PdfPageEvent
 {
 	private Phrase header;
@@ -40,11 +31,23 @@ public class HeaderFooter implements PdfPageEvent
 	private PdfTemplate pageNumberTemplate;
 	private BaseFont baseFont;
 	
+	/**
+	 * Creates a header and footer for specified {@link Document} with default texts.
+	 * The header and footer creation is optimized for page format A4.
+	 * @param document - The {@link Document} to create a header and footer for.
+	 */
 	public HeaderFooter(Document document) 
 	{
 		this(document, "Header - created with iText PDF", "Footer - created with iText PDF");
 	}
 	
+	/**
+	 * Creates a header and footer for specified {@link Document} with specified texts.
+	 * The header and footer creation is optimized for page format A4.
+	 * @param document - The {@link Document} to create a header and footer for.
+	 * @param headerText - The text to be rendered in a header. section
+	 * @param footerText - The text to be rendered in the footer. section
+	 */
 	public HeaderFooter(Document document, String headerText, String footerText)
 	{
 		header = new Phrase(headerText);
@@ -58,6 +61,8 @@ public class HeaderFooter implements PdfPageEvent
 	{
 		PdfContentByte cb = writer.getDirectContent();
 		boolean isOddPage = (writer.getPageNumber() % 2) == 1;
+		
+		// Create a template for the page number creation
 		
 		if (pageNumberTemplate == null && baseFont ==  null)
 		{
@@ -74,7 +79,7 @@ public class HeaderFooter implements PdfPageEvent
 			}		
 		}
 		
-		// Swap header / footer position for even / odd pages
+		// Swap header / footer left / right position for even / odd pages
 		
 		float headerPosX = (isOddPage) ? document.leftMargin() : ((document.right() - document.left()) / 2) + document.leftMargin() + 30;
 		float footerPosY = document.bottom() - 10;
@@ -82,6 +87,8 @@ public class HeaderFooter implements PdfPageEvent
 		if (document.getPageNumber() >= 1) 
 		{
 			ColumnText.showTextAligned(cb, Element.ALIGN_LEFT, header, headerPosX, document.top() + 15, 0);	
+			
+			// Swap footer positon too for even / odd pages
 			
 			if (isOddPage)
 			{
@@ -93,20 +100,21 @@ public class HeaderFooter implements PdfPageEvent
 			}
 		}
 		
+		// Define line extent
+		
 		int lineLeft = (int) document.left();
 		int lineRight = (int) document.right() + 50;
 		
-		float graphicsHeight = (document.top() + document.topMargin()) - document.bottom();
-		float graphicsWidth = (float) lineRight - lineLeft;
+		// Define header / footer vertical position
+		// Attention PDF uses different coordinate origin (lower left corner)
+		// compared to java.awt.Graphics2D (upper left corner)
 		
+		float graphicsHeight = (document.top() + document.topMargin()) - document.bottom();
 		int headerLinePosY = 0;
 		int footerLinePosY = (int) (graphicsHeight - footerPosY - 20);
 		
-		
 		// Draw line below header / above footer
-		
-		
-		
+
 		Graphics2D g = cb.createGraphics(lineRight - lineLeft, (document.top() + document.topMargin()) - document.bottom());
 		g.setColor(Color.BLACK);
 		g.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
@@ -116,6 +124,8 @@ public class HeaderFooter implements PdfPageEvent
 		g.dispose();
 		
 		cb.saveState();
+		
+		// Set and measure page number text
 		
 		String text = "Page " + writer.getPageNumber() + " of ";
 		float textSize = baseFont.getWidthPoint(text, 12);
@@ -155,8 +165,13 @@ public class HeaderFooter implements PdfPageEvent
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see com.itextpdf.text.pdf.PdfPageEvent#onCloseDocument(com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+	 */
 	public void onCloseDocument(PdfWriter writer, Document document)
 	{
+		// Writes the page number text on ending the page
+		
 		pageNumberTemplate.beginText();
 		pageNumberTemplate.setFontAndSize(baseFont, 12);
 		pageNumberTemplate.setTextMatrix(0, 0);

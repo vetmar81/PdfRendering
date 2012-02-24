@@ -9,7 +9,6 @@ import java.awt.Color;
  * Simple enumeration for the most important colors.
  * @author Markus Vetsch
  * @since 06.02.2012
- *
  */
 public enum MainColor
 {
@@ -34,6 +33,10 @@ public enum MainColor
 		this.color = color;
 	}
 	
+	/**
+	 * Gets the corresponding {@link java.awt.Color}.
+	 * @return The {@link java.awt.Color} instance.
+	 */
 	public Color getAwtColor()
 	{
 		return color;

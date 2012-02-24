@@ -3,6 +3,8 @@
  */
 package ch.zhaw.pdfrendering.doc;
 
+import com.itextpdf.text.Paragraph;
+
 import ch.zhaw.pdfrendering.doc.meta.FontDescription;
 import ch.zhaw.pdfrendering.doc.meta.FontStyle;
 import ch.zhaw.pdfrendering.enums.DocumentContentType;
@@ -13,8 +15,10 @@ import ch.zhaw.pdfrendering.enums.HeadingLevel;
  * @author Markus Vetsch
  * @version 1.0, 11.12.2011
  */
-public class Heading implements DocumentContent, Comparable<Heading>
+public class Heading implements DocumentContent
 {	
+	private static final float LINE_SPACING = 40;
+	
 	private static final int SIZE_FIRST = 24;
 	private static final int SIZE_SECOND = 18;
 	private static final int SIZE_THIRD = 16;
@@ -26,12 +30,18 @@ public class Heading implements DocumentContent, Comparable<Heading>
 	private static final float INDENT_FOURTH = 15.0f;
 	
 	private com.itextpdf.text.Paragraph par;
-	private com.itextpdf.text.Section section;
-	
 	private final FontDescription fontDesc;	
 	private final HeadingLevel level;
 	private String text;
 
+	/**
+	 * Creates a new {@link Heading}. Use {@link Heading#create(String, String)} 
+	 * or {@link Heading#create(HeadingLevel, String, String)} to create a new instance.
+	 * @param fontName - The font to be used for the {@link Heading}.
+	 * @param text - The text of the {@link Heading} to be displayed.
+	 * @param size - The font size of the {@link Heading}.
+	 * @param level - The {@link HeadingLevel}.
+	 */
 	private Heading(String fontName, String text, int size, HeadingLevel level)
 	{
 		this.text = text;
@@ -40,33 +50,47 @@ public class Heading implements DocumentContent, Comparable<Heading>
 		fontDesc = createDescription(fontName, size);
 		par = new com.itextpdf.text.Paragraph(text, fontDesc.getFont());
 		
-		par.setLeading(40);
+		// Default line spacing 40 pts
+		
+		par.setLeading(LINE_SPACING);
 		
 		setIndentByLevel(par);
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.zhaw.pdfrendering.doc.DocumentContent#getText()
+	 */
 	public String getText()
 	{
 		return text;
 	}
 	
+	/** Returns the {@link HeadingLevel} of the current instance.
+	 * @return The {@link HeadingLevel}.
+	 */
 	public HeadingLevel getLevel()
 	{
 		return level;
 	}
 	
-	public void updateTitle(String number)
-	{
-		text = String.format("%1$s) %2$s", number, text);
-		par = new com.itextpdf.text.Paragraph(text, fontDesc.getFont());
-		setIndentByLevel(par);
-	}
-	
+	/**
+	 * Creates a new {@link Heading} with default level, specified font and text
+	 * @param fontName - The font to be used for the {@link Heading}
+	 * @param text - The text of the {@link Heading}
+	 * @return The generated {@link Heading}.
+	 */
 	public static Heading create(String fontName, String text)
 	{
 		return create(HeadingLevel.DEFAULT, fontName, text);
 	}
 
+	/**
+	 * Creates a new {@link Heading} with default level, specified font and text
+	 * @param level - The {@link HeadingLevel} to be applied.
+	 * @param fontName - The font to be used for the {@link Heading}
+	 * @param text - The text of the {@link Heading}
+	 * @return The generated {@link Heading}.
+	 */
 	public static Heading create(HeadingLevel level, String fontName, String text)
 	{		
 		switch(level)
@@ -102,20 +126,22 @@ public class Heading implements DocumentContent, Comparable<Heading>
 	{
 		return DocumentContentType.HEADING;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	
+	/**
+	 * Creates a {@link FontDescription} for the specified font name and font size.
+	 * @param fontName - The name of the font.
+	 * @param size - The size of the font.
+	 * @return
 	 */
-	public int compareTo(Heading o)
-	{
-		return Integer.valueOf(level.getDepth()).compareTo(Integer.valueOf(o.level.getDepth()));
-	}
-
 	private FontDescription createDescription(String fontName, int size)
 	{
 		return new FontDescription(fontName, size, FontStyle.BOLD, com.itextpdf.text.BaseColor.BLACK);
 	}
 	
+	/**
+	 * Sets the indentation by {@link HeadingLevel}.
+	 * @param par - The underlying iText {@link Paragraph} instance.
+	 */
 	private void setIndentByLevel(com.itextpdf.text.Paragraph par)
 	{
 		switch(level)

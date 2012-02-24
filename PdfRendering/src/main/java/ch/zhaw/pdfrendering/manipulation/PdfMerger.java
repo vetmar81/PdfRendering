@@ -33,12 +33,20 @@ public class PdfMerger implements PdfManipulation
 	private final String pdfDirectory;
 	private final String outputFilePath;
 	
+	/**
+	 * Creates a new {@link PdfMerger} instance.
+	 * @param pdfDirectory - The input directory with PDF files to be merged.
+	 * @param outputFilePath - The output path of the merged file.
+	 */
 	public PdfMerger(String pdfDirectory, String outputFilePath)
 	{
 		this.pdfDirectory = pdfDirectory;
 		this.outputFilePath = outputFilePath;
 	}
 	
+	/* (non-Javadoc)
+	 * @see ch.zhaw.pdfrendering.PdfManipulation#run()
+	 */
 	public void run()
 	{
 		Document document = null;
@@ -51,8 +59,11 @@ public class PdfMerger implements PdfManipulation
 			{
 				File outFile = new File(outputFilePath);
 				FileOutputStream outStream = new FileOutputStream(outFile);
-				document = new Document(PageSize.A4);
+				document = new Document(PageSize.A4);				
 				PdfWriter writer = PdfWriter.getInstance(document, outStream);
+				
+				// Create a map to store imported pages for later bookmarking
+				
 				Map<Integer, PdfImportedPage> importedPages = new HashMap<Integer, PdfImportedPage>();
 				
 				writer.setViewerPreferences(PdfWriter.PageLayoutSinglePage | PdfWriter.PageModeUseOutlines);
@@ -68,6 +79,8 @@ public class PdfMerger implements PdfManipulation
 						
 						for (int i = 1; i <= reader.getNumberOfPages(); i++)
 						{
+							// Add imported page into document
+							
 							document.newPage();
 							PdfImportedPage page = writer.getImportedPage(reader, i);
 							writer.getDirectContent().addTemplate(page, 0, 0);
@@ -80,6 +93,8 @@ public class PdfMerger implements PdfManipulation
 				PdfContentByte cb = writer.getDirectContent();
 				cb.saveState();
 				PdfOutline root = cb.getRootOutline();
+				
+				// Create bookmarks from stored page map
 				
 				for (Entry<Integer,PdfImportedPage> pageMapEntry : importedPages.entrySet())
 				{

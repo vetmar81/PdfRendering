@@ -13,6 +13,12 @@ public class UnitConversion
 	{		
 	}
 	
+	/**
+	 * Returns the specified value from specified {@link Unit} in point values.
+	 * @param unit - The input {@link Unit}.
+	 * @param value - The original value in given {@link Unit}.
+	 * @return The converted value in points.
+	 */
 	public static float asPoints(Unit unit, float value)
 	{
 		switch(unit)

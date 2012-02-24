@@ -4,7 +4,6 @@
 package ch.zhaw.pdfrendering.doc.meta;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -37,24 +36,20 @@ public class DocumentDefinition
 	{
 		this.rect = com.itextpdf.text.PageSize.getRectangle(format.toUpperCase());
 		
-		//TODO: Why does this not work?
-		
-		if (format.toUpperCase().equals("A4_LANDSCAPE"))
-		{
-			this.height = UnitConversion.asMillimeters(Unit.POINT, rect.getWidth());
-			this.width = UnitConversion.asMillimeters(Unit.POINT, rect.getHeight());
-		}
-		else
-		{
-			this.width = UnitConversion.asMillimeters(Unit.POINT, rect.getWidth());
-			this.height = UnitConversion.asMillimeters(Unit.POINT, rect.getHeight());
-		}		
+		this.width = UnitConversion.asMillimeters(Unit.POINT, rect.getWidth());
+		this.height = UnitConversion.asMillimeters(Unit.POINT, rect.getHeight());	
 		
 		// add default margins
 		
 		addMargins();
 	}
 	
+	/**
+	 * Creates a new {@link DocumentDefinition} with specified width / height values and applying the {@link Unit}.
+	 * @param unit - The {@link Unit} to be used.
+	 * @param width - The specified width of the document.
+	 * @param height - The specified height of the document.
+	 */
 	public DocumentDefinition(Unit unit, float width, float height)
 	{		
 		this.width = UnitConversion.asMillimeters(unit, width);
@@ -65,6 +60,10 @@ public class DocumentDefinition
 		addMargins();
 	}
 	
+	/**
+	 * Gets a {@link RectangleReadOnly} from this {@link DocumentDefinition}.
+	 * @return The read-only {@link RectangleReadOnly} to be returned.
+	 */
 	public RectangleReadOnly getRect()
 	{
 		return new RectangleReadOnly(this.rect);

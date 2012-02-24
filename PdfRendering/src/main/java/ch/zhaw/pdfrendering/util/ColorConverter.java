@@ -14,6 +14,9 @@ import com.itextpdf.text.BaseColor;
  */
 public class ColorConverter
 {
+	/**
+	 * Use {@link ColorConverter#fromAwtColor(Color)} instead.
+	 */
 	private ColorConverter()
 	{		
 	}
