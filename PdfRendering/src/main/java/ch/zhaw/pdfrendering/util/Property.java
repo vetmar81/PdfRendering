@@ -57,4 +57,13 @@ public class Property
 	{
 		return properties.getProperty("ADOBE_READER_PATH");
 	}
+	
+	/**
+	 * Gets the file path to the title image file.
+	 * @return The file path to the title image file.
+	 */
+	public static String getTitleImage()
+	{
+		return properties.getProperty("TITLE_IMAGE_PATH");
+	}
 }

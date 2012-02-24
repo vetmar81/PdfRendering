@@ -3,8 +3,10 @@
  */
 package ch.zhaw.pdfrendering.doc;
 
-import java.io.File;
 import java.util.Arrays;
+
+import ch.zhaw.pdfrendering.util.Property;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -41,7 +43,7 @@ public class TitlePage
 			
 			// Add picture
 			
-			image = Image.getInstance(System.getProperty("user.dir") + File.separator + "res" + File.separator + "ZHAW_Logo.png");
+			image = Image.getInstance(Property.getTitleImage());
 			image.setAlignment(Image.ALIGN_TOP | Image.ALIGN_RIGHT);
 			image.scalePercent(35);
 			
